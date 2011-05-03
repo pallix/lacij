@@ -1,0 +1,33 @@
+(ns lacij.test.functional.swing
+  (:use clojure.pprint
+        lacij.graph.core
+        lacij.graph.svg.graph
+        analemma.xml
+        (tikkba swing dom)
+        tikkba.utils.xml
+        (lacij.view.svg rectnodeview circlenodeview))
+  (:import (javax.swing JFrame SwingUtilities)))
+
+(defn -main []
+  (let [g (-> (create-graph)
+              (add-node :athena "Athena" 10 30)
+              (add-node :zeus "Zeus" 200 150)
+              (add-node :hera "Hera" 500 150)
+              (add-node :ares "Ares" 350 250)
+              (add-node :matrimony "♥" 400 170 :shape :circle)
+              (add-edge :father1 :athena :zeus)
+              (add-edge :zeus-matrimony :zeus :matrimony)
+              (add-edge :hera-matrimony :hera :matrimony)
+              (add-edge :son-zeus-hera :ares :matrimony)
+              (build))
+        _ (Thread/sleep 1000) ;; wait for rendering, TODO: attach a listener instead
+        doc (view g)
+        canvas (jsvgcanvas)
+        frame (JFrame.)]
+    (set-document canvas doc)
+    (.add (.getContentPane frame) canvas)
+    (.setSize frame 800 600)
+    (.setSize canvas 800 600)
+    (SwingUtilities/invokeAndWait
+     (fn [] (.setVisible frame true)))))
+

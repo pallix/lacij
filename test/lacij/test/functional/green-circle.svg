@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="600" height="600">
+  <title
+     id="title4">Draw</title>
+  <circle
+     cx="125"
+     cy="99"
+     r="19"
+     style="stroke:black;stroke-opacity:1;stroke-width:1;fill:#238c8c;fill-opacity:1"
+     id="greenCircle0" />
+</svg>
