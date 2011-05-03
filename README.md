@@ -18,7 +18,7 @@ dynamic modification. Automatic layout is provided for the visualization.
                   (build))]
         (export g "/tmp/simple.svg" :indent "yes"))
 
-![Simple graph](https://github.com/pallix/lacij/blob/master/resources/lacij/examples/simple.png)
+![Simple graph](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/simple.png)
 
 ### Example 2: using SVG styles to customize nodes and edges
 
@@ -42,13 +42,12 @@ dynamic modification. Automatic layout is provided for the visualization.
         (build)
         (export "/tmp/styles.svg"))
 
-![Graph with styles](https://github.com/pallix/lacij/blob/master/resources/lacij/examples/styles.png)
+![Graph with styles](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/styles.png)
 
 
 ### Example 3: automatic layout
 
-![Automatic layout](https://github.com/pallix/lacij/blob/master/resources/lacij/examples/layout1.png)
-
+![Automatic layout](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/layout1.png)
 
 All the full examples and other examples can be found in the test directory.
 
