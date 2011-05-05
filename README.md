@@ -51,11 +51,28 @@ dynamic modification. Automatic layout is provided for the visualization.
 
 All the full examples and other examples can be found in the test directory.
 
-### Contribution
+## Contribution
 
 If you want to contribute and help this project, you can implement a layout algorithm of your choice.
 
 See [http://www.graphviz.org/Theory.php](http://www.graphviz.org/Theory.php) for some references.
+
+## Work in progress
+
+The algorithm defined in the following paper is currently being implemented:
+
+@article{wills1999nicheworks,
+  title={{NicheWorks: Interactive visualization of very large graphs}},
+  author={Wills, G.J.},
+  journal={Journal of Computational and Graphical Statistics},
+  volume={8},
+  number={2},
+  pages={190--212},
+  issn={1061-8600},
+  year={1999},
+  publisher={JSTOR}
+ }
+
 
 ## License
 
