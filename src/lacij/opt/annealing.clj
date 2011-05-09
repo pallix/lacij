@@ -6,8 +6,8 @@
   (:import java.util.Random))
 
 (defn optimize
-  "Returns the best state according to a
-   simulated annealing optimization.
+  "Returns the state with the greater energy according to a
+   simulated annealing optimization. 
    
    Options: the probability p function
             the initial temperature init-temp
@@ -15,7 +15,8 @@
             the number of iterations iterations
 
    See: ﻿Busetti, Franco. 1983. \"Simulated annealing overview.\"
-        http://en.wikipedia.org/wiki/Simulated_annealing"
+        http://en.wikipedia.org/wiki/Simulated_annealing
+        http://www.cleveralgorithms.com/nature-inspired/physical/simulated_annealing.html"
   ([state energy neighbour & options]
      (let [options (apply hash-map options)
            cool-temp (fn [temp cooling-rate]
