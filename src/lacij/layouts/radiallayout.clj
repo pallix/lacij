@@ -38,7 +38,6 @@
 
 (defn add-to-tree
   [tree nid children added]
-  (printf "nid = %s added = %s\n" nid added)
   (let [tree (add-node tree nid (str (name nid)))
         added (conj added nid)]
     (reduce (fn [[tree added] child]
@@ -62,8 +61,6 @@
 
 (defn build-tree-helper
   [graph border visited added layer tree layers-data]
-  (prn "f border =")
-  (pprint border)
   (if (seq border)
     (let [[nextborder visited added tree layers-data]
           (reduce (fn [[nextborder visited added tree layers-data] nid]
@@ -71,8 +68,6 @@
                                     visited added layer tree layers-data))
                   [() visited added tree layers-data]
                   border)]
-      (prn "nextborder =")
-      (pprint nextborder)
       (recur graph nextborder visited added (inc layer) tree layers-data)
       )
     [tree layers-data]))
@@ -96,13 +91,18 @@
                                                0
                                                tree
                                                {:layers [] :nodes {}})]
-    (prn "layers-data =")
-    (pprint layers-data)
-    (prn "tree =")
-    (pprint tree)
-    (prn "ok")
-    (export (build (layout tree :naive)) "/tmp/tree.svg" :indent "yes")
-    ))
+    [tree layers-data]))
+
+(defn leafs
+  [tree nid]
+  (leafs-seq #(seq (in-children tree %)) #(in-children tree %) nid))
+
+(defn label-sizes
+  [tree layers-data]
+  (reduce (fn [layers-data nid]
+            (assoc-in layers-data [:sizes nid] (count (leafs tree nid))))
+          layers-data
+          (nodes tree)))
 
 (defrecord RadialLayout
     []
@@ -110,7 +110,10 @@
 
   (layout-graph
    [this graph options]
-   (let [[tree layers-data] (build-tree graph)]
+   (let [[tree layers-data] (build-tree graph)
+         layers-data (label-sizes tree layers-data)]
+     (prn "|layers-data =")
+     (pprint layers-data)
      )
    graph
    ))

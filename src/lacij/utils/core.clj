@@ -16,6 +16,15 @@
                       pair))
                   m))))))
 
+(defn leafs-seq
+  [branch? children root]
+  (let [leafs (fn leafs [node]
+                (lazy-seq
+                 (if-not (branch? node)
+                   [node]
+                   (mapcat leafs (children node)))))]
+    (leafs root)))
+
 
 ;; from the joy of clojure book:
 
