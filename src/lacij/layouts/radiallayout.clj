@@ -4,6 +4,7 @@
 (ns lacij.layouts.radiallayout
   (:use clojure.pprint
         lacij.graph.core
+        lacij.graph.svg.graph
         lacij.layouts.core))
 
 (defn in-children
@@ -33,27 +34,49 @@
         layers (assoc (:layers layers-data) layer nodes)]
     (assoc layers-data :layers layers)))
 
-(defn layer-nodes-helper
-  [graph nextnodes layers-data]
-  (if-let [[currentnode layer] (first nextnodes)] 
-    (let [layers-data (assoc-in layers-data [:nodes currentnode] layer)
-          layers-data (assoc-node-to-layer layers-data layer currentnode)
-          chil (in-children graph currentnode)
-          nextnodes (rest nextnodes)]
-      (if (empty? chil)
-        (layer-nodes-helper graph nextnodes layers-data)
-        (layer-nodes-helper graph
-                            (concat nextnodes (map (fn [a] [a (inc layer)]) chil))
-                            layers-data)))
-    layers-data)
+(defn add-to-tree
+  [nid graph nextborder visited layer tree layers-data]
+  (if (contains? visited nid)
+    [nextborder visited tree layers-data]
+    (let [layers-data (assoc-in layers-data [:nodes nid] layer)
+          layers-data (assoc-node-to-layer layers-data layer nid)
+          children (in-children graph nid)]
+      [(concat nextborder children) (conj visited nid) tree layers-data])))
+
+(defn build-tree
+  [graph border visited layer tree layers-data]
+  (if (seq border)
+    (let [[nextborder visited tree layers-data]
+          (reduce (fn [[nextborder visited tree layers-data] nid]
+                    (add-to-tree nid graph nextborder
+                                 visited layer tree layers-data))
+                  [() visited tree layers-data]
+                  border)]
+      (prn "nextborder =")
+      (pprint nextborder)
+      (recur graph nextborder visited (inc layer) tree layers-data)
+      )
+    [tree layers-data]))
+
+(defn label-sizes-helper
+  [graph layers-data])
+
+(defn label-sizes
+  [graph layers-data]
+  
   )
 
 (defn layer-nodes
   [graph]
   (let [rootnode (find-root graph)
-        layers-data (layer-nodes-helper graph
-                                        [[rootnode 0]]
-                                        {:layers [] :nodes {}})]
+        tree (create-graph)
+        [tree layers-data] (build-tree graph
+                                       [rootnode]
+                                       #{}
+                                       0
+                                       tree
+                                       {:layers [] :nodes {}})
+        data (label-sizes graph layers-data)]
     (pprint "data =")
     (pprint layers-data)
     
