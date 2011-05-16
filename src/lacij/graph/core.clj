@@ -142,3 +142,28 @@
        ~@body
        (finally
         (end-update graph#)))))
+
+(defn in-children
+  "Returns all src nodes of all in-edges for the node nid."
+  [graph nid]
+  (let [n (node graph nid)]
+   (concat (map #(src (edge graph %)) (in-edges n)))))
+
+(defn find-root
+  "Returns the root of the graph. The root is the node
+   with the minimum of out-edges"
+  [graph]
+  (let [allnodes (nodes graph)]
+    (first
+     (reduce
+      (fn [[rootid noutedges] nodeid]
+        (let [out (count (out-edges (node graph nodeid)))]
+          (if (< out noutedges)
+            [nodeid out]
+            [rootid noutedges])))
+      [(first allnodes) (count (out-edges (node graph (first allnodes))))]
+      allnodes))))
+
+(def ^{:doc "Generates a unique id for an edge."} geneid (partial (comp keyword gensym) "e"))
+
+(def ^{:doc "Generates a unique id for a node"} genid (partial (comp keyword gensym) "h"))

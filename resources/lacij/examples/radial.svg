@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="text/ecmascript" width="800" zoomAndPan="magnify" contentStyleType="text/css" height="600" preserveAspectRatio="xMidYMid meet" overflow="visible" version="1.0">
+<defs>
+<marker refX="8" refY="5" markerUnits="strokeWidth" orient="auto" markerHeight="10" id="lacij-end-arrow-marker" viewBox="0 0 10 10" preserveAspectRatio="xMidYMid meet" markerWidth="14">
+<polyline points="0,0 10,5 0,10 1,5"/>
+</marker>
+</defs>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="400.0" cy="300.0" height="25" id="r"/>
+<text x="400.0" y="300.0" style=" dominant-baseline: central; " text-anchor="middle">r</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="522.5774349296776" cy="59.428238469140666" height="25" id="t5"/>
+<text x="522.5774349296776" y="59.428238469140666" style=" dominant-baseline: central; " text-anchor="middle">t5</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="442.23730556086235" cy="33.324148039312774" height="25" id="t4"/>
+<text x="442.23730556086235" y="33.324148039312774" style=" dominant-baseline: central; " text-anchor="middle">t4</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="640.5717615308594" cy="422.5774349296776" height="25" id="v1"/>
+<text x="640.5717615308594" y="422.5774349296776" style=" dominant-baseline: central; " text-anchor="middle">v1</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="522.5774349296777" cy="540.5717615308592" height="25" id="u1"/>
+<text x="522.5774349296777" y="540.5717615308592" style=" dominant-baseline: central; " text-anchor="middle">u1</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="442.23730556086235" cy="566.6758519606872" height="25" id="u2"/>
+<text x="442.23730556086235" y="566.6758519606872" style=" dominant-baseline: central; " text-anchor="middle">u2</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="239.61882564609377" cy="218.28171004688159" height="25" id="y"/>
+<text x="239.61882564609377" y="218.28171004688159" style=" dominant-baseline: central; " text-anchor="middle">y</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="336.3603896932107" cy="363.6396103067893" height="25" id="x"/>
+<text x="336.3603896932107" y="363.6396103067893" style=" dominant-baseline: central; " text-anchor="middle">x</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="371.8417962927585" cy="477.7839013071248" height="25" id="x4"/>
+<text x="371.8417962927585" y="477.7839013071248" style=" dominant-baseline: central; " text-anchor="middle">x4</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="590.9188309203678" cy="109.08116907963216" height="25" id="t1"/>
+<text x="590.9188309203678" y="109.08116907963216" style=" dominant-baseline: central; " text-anchor="middle">t1</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="159.42823846914064" cy="177.4225650703224" height="25" id="y3"/>
+<text x="159.42823846914064" y="177.4225650703224" style=" dominant-baseline: central; " text-anchor="middle">y3</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="318.2817100468817" cy="460.38117435390626" height="25" id="x5"/>
+<text x="318.2817100468817" y="460.38117435390626" style=" dominant-baseline: central; " text-anchor="middle">x5</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="666.6758519606872" cy="257.76269443913765" height="25" id="t2"/>
+<text x="666.6758519606872" y="257.76269443913765" style=" dominant-baseline: central; " text-anchor="middle">t2</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="209.08116907963213" cy="109.08116907963222" height="25" id="y2"/>
+<text x="209.08116907963213" y="109.08116907963222" style=" dominant-baseline: central; " text-anchor="middle">y2</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="640.5717615308592" cy="177.42256507032235" height="25" id="t3"/>
+<text x="640.5717615308592" y="177.42256507032235" style=" dominant-baseline: central; " text-anchor="middle">t3</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="133.32414803931277" cy="257.7626944391377" height="25" id="y1"/>
+<text x="133.32414803931277" y="257.7626944391377" style=" dominant-baseline: central; " text-anchor="middle">y1</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="239.6188256460938" cy="381.7182899531184" height="25" id="x3"/>
+<text x="239.6188256460938" y="381.7182899531184" style=" dominant-baseline: central; " text-anchor="middle">x3</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="222.21609869287522" cy="328.15820370724157" height="25" id="x2"/>
+<text x="222.21609869287522" y="328.15820370724157" style=" dominant-baseline: central; " text-anchor="middle">x2</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="272.72077938642144" cy="427.27922061357856" height="25" id="x1"/>
+<text x="272.72077938642144" y="427.27922061357856" style=" dominant-baseline: central; " text-anchor="middle">x1</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="560.3811743539062" cy="381.7182899531184" height="25" id="v"/>
+<text x="560.3811743539062" y="381.7182899531184" style=" dominant-baseline: central; " text-anchor="middle">v</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="336.3603896932107" cy="236.36038969321075" height="25" id="w"/>
+<text x="336.3603896932107" y="236.36038969321075" style=" dominant-baseline: central; " text-anchor="middle">w</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="527.2792206135786" cy="172.72077938642144" height="25" id="t"/>
+<text x="527.2792206135786" y="172.72077938642144" style=" dominant-baseline: central; " text-anchor="middle">t</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="455.62305898749054" cy="471.19017293312766" height="25" id="u"/>
+<text x="455.62305898749054" y="471.19017293312766" style=" dominant-baseline: central; " text-anchor="middle">u</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="371.8417962927584" cy="122.21609869287522" height="25" id="w2"/>
+<text x="371.8417962927584" y="122.21609869287522" style=" dominant-baseline: central; " text-anchor="middle">w2</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="666.6758519606872" cy="342.2373055608624" height="25" id="v2"/>
+<text x="666.6758519606872" y="342.2373055608624" style=" dominant-baseline: central; " text-anchor="middle">v2</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="590.9188309203678" cy="490.9188309203678" height="25" id="v3"/>
+<text x="590.9188309203678" y="490.9188309203678" style=" dominant-baseline: central; " text-anchor="middle">v3</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="318.2817100468815" cy="139.6188256460938" height="25" id="w1"/>
+<text x="318.2817100468815" y="139.6188256460938" style=" dominant-baseline: central; " text-anchor="middle">w1</text>
+</g>
+<g>
+<circle shape=":circle" width="25" style=" fill: white;  stroke: black; " r="20" cx="490.0" cy="300.0" height="25" id="s"/>
+<text x="490.0" y="300.0" style=" dominant-baseline: central; " text-anchor="middle">s</text>
+</g>
+<g>
+<line y2="180.21291125473968" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="651.3549630983076" x2="545.8228977049143" y1="244.90694224540687"/>
+</g>
+<g>
+<line y2="300.0" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="470.0487189948035" x2="420.0" y1="301.39512947488254"/>
+</g>
+<g>
+<line y2="357.4592704192903" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="240.75977578421097" x2="317.33925936730765" y1="335.65033557555984"/>
+</g>
+<g>
+<line y2="212.10137015938264" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="177.9719155604764" x2="220.5976953201907" y1="184.91469693864065"/>
+</g>
+<g>
+<line y2="313.89316740917997" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="545.0602854915267" x2="504.386796006773" y1="368.86253775938764"/>
+</g>
+<g>
+<line y2="314.8628965095479" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="348.6736191997239" x2="386.61738787282286" y1="347.87939523465485"/>
+</g>
+<g>
+<line y2="485.0833403423076" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="507.25654606729813" x2="470.00985499426355" y1="527.7160093371284"/>
+</g>
+<g>
+<line y2="227.04913298266314" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="150.64465611500154" x2="221.64294472011042" y1="247.7626944391377"/>
+</g>
+<g>
+<line y2="217.13515577444437" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="365.001393426245" x2="341.8731368095507" y1="141.00995110859338"/>
+</g>
+<g>
+<line y2="365.0347397816718" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="259.4241870209252" x2="316.4091086880142" y1="378.9348279339171"/>
+</g>
+<g>
+<line y2="172.72077938642144" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="620.6204805256627" x2="547.2792206135786" y1="178.81769454520486"/>
+</g>
+<g>
+<line y2="280.7747660812336" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="520.4388177470652" x2="495.51274711634" y1="191.5146318021396"/>
+</g>
+<g>
+<line y2="378.5025068163372" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="285.0340088929346" x2="322.9777775660336" y1="411.51900554144413"/>
+</g>
+<g>
+<line y2="156.96056431428698" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="577.5362187931906" x2="539.5924501200917" y1="123.94406558918006"/>
+</g>
+<g>
+<line y2="371.7182899531184" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="648.6999710347038" x2="577.7016824295949" y1="351.00472849664396"/>
+</g>
+<g>
+<line y2="152.83034147905596" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="523.2754248637276" x2="525.1886513482254" y1="79.41605500952258"/>
+</g>
+<g>
+<line y2="382.43346272250744" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="323.7944571632217" x2="329.51998682669733" y1="441.1559404351399"/>
+</g>
+<g>
+<line y2="287.1442478062692" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="350.74718569998373" x2="384.67911113762045" y1="250.2535571023907"/>
+</g>
+<g>
+<line y2="216.4699517858453" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="318.97969998093157" x2="334.2698204278576" y1="159.6066421864757"/>
+</g>
+<g>
+<line y2="198.3912721395161" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="217.21590194114813" x2="237.5282563807407" y1="127.35207823248423"/>
+</g>
+<g>
+<line y2="491.17798947350957" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="447.75005267720235" x2="456.3210489215406" y1="547.4506180419207"/>
+</g>
+<g>
+<line y2="230.1800498057118" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="259.6188256460938" x2="317.33925936730765" y1="218.28171004688159"/>
+</g>
+<g>
+<line y2="318.79385241571816" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="461.13580610383053" x2="483.1595971334866" y1="451.9649390143613"/>
+</g>
+<g>
+<line y2="399.98919910597044" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="588.8282616550147" x2="568.5159072154222" y1="471.0283930130023"/>
+</g>
+<g>
+<line y2="155.0618275292429" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="450.37203842237835" x2="517.8897893578608" y1="51.59505719216479"/>
+</g>
+<g>
+<line y2="381.9105194596413" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="369.7512270274054" x2="344.4951225547267" y1="457.8934633997593"/>
+</g>
+<g>
+<line y2="389.2104218214367" marker-end="url(#lacij-end-arrow-marker)" style=" stroke: #000000;  stroke-width: 1; " x1="621.5506312049563" x2="578.924851445242" y1="416.39709504217865"/>
+</g>
+</svg>

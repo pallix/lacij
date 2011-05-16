@@ -47,6 +47,11 @@ dynamic modification. Automatic layout is provided for the visualization.
 
 ### Example 3: automatic layout
 
+Radial Layout:
+
+![Automatic layout](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/radial.png)
+
+Naive Layout (a simple layout used to test the library):
 ![Automatic layout](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/layout1.png)
 
 All the full examples and other examples can be found in the test directory.

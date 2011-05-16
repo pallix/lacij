@@ -21,7 +21,7 @@
          markers-def (dom/elements doc *svg-ns* defs)
          node-elements (map (fn [nodeid]
                               (let [n (node graph nodeid)]
-                               (view-node (node-view n) n context)))
+                                (view-node (node-view n) n context)))
                             (nodes graph))
          edge-elements (map (fn [edgeid]
                               (let [e (edge graph edgeid)]
