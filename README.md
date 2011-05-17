@@ -81,7 +81,7 @@ The algorithm defined in the following paper is currently being implemented:
 
 ## License
 
-Copyright (C) 2010 Fraunhofer Gesellschaft
+Copyright (C) 2010-2011 Fraunhofer Gesellschaft
 
 Distributed under the Eclipse Public License, the same as Clojure.
 
