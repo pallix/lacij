@@ -34,8 +34,8 @@
 
   (node-center
    [this]
-   [(+ x (by-two width))
-    (+ y (by-two height))])
+   [(double (+ x (by-two width)))
+    (double (+ y (by-two height)))])
 
   (add-node-label
    [this label]
@@ -74,7 +74,9 @@
                           (apply-attrs attrs)))
                      texts
                      decorations)]
-     (dom/elements doc *svg-ns* xml)))
+      ;; (prn "xml =")
+      ;; (pprint xml)
+      (dom/elements doc *svg-ns* xml)))
 
   (ports
    [this]
