@@ -47,14 +47,24 @@
 
   (view-node
    [this node context]
-   (let [{:keys [doc tmpdecorators]} context
+    (let [{:keys [doc tmpdecorators]} context
          [x-center y-center] (node-center this)
          ;; TODO: use the position indicator
          texts (map (fn [label]
                       (let [txt (text label)
-                            pos (position label)]
-                        (-> (s/text {:x x-center :y y-center :text-anchor "middle"} txt)
-                            (s/style :dominant-baseline :central))))
+                            pos (position label)
+                            style (nodelabel-style label)
+                            font-size (:font-size style)
+                            dy (if (nil? font-size)
+                                 15 ;; what is the default font-size?
+                                 font-size)]
+                        (->
+                         (if (string? txt)
+                           (s/text {:x x-center :y y-center :text-anchor "middle"}
+                                   txt)
+                           (apply s/text {:x x :y y :text-anchor "start"}
+                                  (map #(s/tspan {:dy dy :x x} %) txt)))
+                         (apply-styles {:dominant-baseline :central} style))))
                     labels)
          decorations (map #(decorate % this context) (concat decorators tmpdecorators))
          xml (concat (s/group
@@ -96,7 +106,7 @@
   (bounding-box
    [this]
    (let [margin 5]
-    [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))]))
+     [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))]))
 
   (node-width
    [this]

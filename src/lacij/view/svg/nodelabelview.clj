@@ -6,7 +6,7 @@
   (:use lacij.view.core))
 
 (defrecord SvgNodeLabelView
-    [text position]
+    [text position style params]
   NodeLabelView
 
   (text
@@ -16,8 +16,13 @@
   (position
    [this]
    position)
-  )
+
+  (nodelabel-style
+    [this]
+    style))
 
 (defn nodelabelview
-  [text position]
-  (SvgNodeLabelView. text position))
+  ([text position]
+     (SvgNodeLabelView. text position {} {}))
+  ([text position style params]
+     (SvgNodeLabelView. text position style params)))
