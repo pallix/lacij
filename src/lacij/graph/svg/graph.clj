@@ -59,14 +59,24 @@
 
   (add-label-kv
    [this id label params]
-   (cond (contains? edges id)
-         (let [edge (get edges id)
-               edgeview (edge-view edge)
-               edgeview (add-edge-label edgeview
-                                        (edgelabelview label :center (:style params)
-                                                       (dissoc params :style)))
-               edge (svgedge id edgeview (src edge) (dst edge))]
-           (update-in this [:edges] assoc id edge))))
+    (cond (contains? edges id)
+          (let [edge (get edges id)
+                edgeview (edge-view edge)
+                edgeview (add-edge-label edgeview
+                                         (edgelabelview label :center (:style params)
+                                                        (dissoc params :style)))
+                edge (svgedge id edgeview (src edge) (dst edge))]
+            (update-in this [:edges] assoc id edge))
+
+          (contains? nodes id)
+          (let [node (get nodes id)
+                nodeview (node-view node)
+                nodeview (add-node-label nodeview
+                                         (nodelabelview label :center
+                                                        (:style params)
+                                                        (dissoc params :style)))
+                node (svgnode id nodeview)]
+            (update-in this [:nodes] assoc id node))))
 
   (add-default-node-style-kv
    [this node-styles]
