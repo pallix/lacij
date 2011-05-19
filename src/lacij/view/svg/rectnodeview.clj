@@ -80,9 +80,9 @@
 
   (ports
    [this]
-   [[x y] [(+ x (by-two width)) y] [(+ x width) y]
-    [x (+ y (by-two height))] [(+ x width) (+ y (by-two height))]
-    [x (+ y height)] [(+ x (by-two width)) (+ y height)] [(+ x width) (+ y height)]])
+   [[x y] [(double (+ x (by-two width))) y] [(+ x width) y]
+    [x (double (+ y (by-two height)))] [(+ x width) (double (+ y (by-two height)))]
+    [x (+ y height)] [(double (+ x (by-two width))) (+ y height)] [(+ x width) (+ y height)]])
 
   (add-node-styles-kv
    [this styles]
