@@ -48,6 +48,8 @@
 
 (defn update-node-edges
   [graph edgeid srcid dstid]
+  {:pre [(not (nil? (node graph srcid)))
+         (not (nil? (node graph dstid)))]}
   (let [srcnode (node graph srcid)
         srcnode (update-in srcnode [:outedges] conj edgeid)
         dstnode (node graph dstid)
