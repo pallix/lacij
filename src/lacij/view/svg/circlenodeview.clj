@@ -57,8 +57,8 @@
    [this]
    (map (fn [angle]
           (let [ra (Math/toRadians angle)]
-            [(+ x (* radius (Math/cos ra)))
-             (+ y (* radius (Math/sin ra)))]))
+            [(double (+ x (* radius (Math/cos ra))))
+             (double (+ y (* radius (Math/sin ra))))]))
         (range 0 360 22)))
 
   (bounding-box
