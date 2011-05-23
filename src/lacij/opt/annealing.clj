@@ -59,7 +59,11 @@
                      (range iterations))
              increases (:increases sol)]
          (when calibration
-           (let [avg (/ (apply + increases) (count increases))]
+           (let [nincreases (count increases)
+                 avg (if (zero? nincreases)
+                       0
+                       (/ (apply + increases) nincreases))]
              (printf "Average increase = %s\n" avg)
-             (printf "Suggested temperature = %s\n" (/ (- avg) (Math/log 0.8)))))
+             (printf "Suggested temperature = %s\n" (/ (- avg) (Math/log 0.8)))
+             (printf "Ebest = %d\n" (:ebest sol))))
          (:sbest sol)))))
