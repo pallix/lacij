@@ -149,7 +149,7 @@
 
 (defn place-nodes-helper
   "Helper for the place nodes function."
-  [graph tree layers-data radius nextchildren]
+  [graph tree layers-data radius nextchildren sort-children]
   (if (seq nextchildren) 
     (let [[child & res] nextchildren]
       (let [{:keys [child absolute-angle offset layer center-x center-y]} child
@@ -161,7 +161,7 @@
             x (+ x center-x)
             y (- center-y y)
             graph (move-node graph child x y)
-            children-of-child (in-children tree child)
+            children-of-child (sort-children (in-children tree child))
             reschildren (concat res (assoc-children-data
                                      layers-data
                                      children-of-child
@@ -171,20 +171,22 @@
                                      center-y))]
         ;; (printf "  child = %s absolute = %s layer = %s  x = %s y = %s\n"
         ;;         child absolute-angle layer x y)
-        (recur graph tree layers-data radius reschildren)))
+        (recur graph tree layers-data radius reschildren sort-children)))
     graph))
 
 (defn place-nodes
   "Given layers-data and a tree, assign x-y coordinates to the nodes
    of the graph to build a hierarchical layout. "
-  [graph tree layers-data width height radius] 
+  [graph tree layers-data width height radius sort-children] 
   (let [rootnode (ffirst (:layers layers-data))
         center-x (double (/ width 2))
         center-y (double (/ height 2))
         graph (move-node graph rootnode center-x center-y)
-        children (assoc-children-data layers-data (in-children tree rootnode) 0 1 center-x center-y)]
+        children (assoc-children-data
+                  layers-data (sort-children (in-children tree rootnode))
+                  0 1 center-x center-y)]
     ;; (printf "root-node = %s center-x %s center-y %s\n" rootnode center-x center-y)
-        (place-nodes-helper graph tree layers-data radius children)))
+        (place-nodes-helper graph tree layers-data radius children sort-children)))
 
 (defrecord RadialLayout
     []
@@ -196,17 +198,18 @@
    ;;
    ;;  Options are: width, height, radius.
    ;;
-   (let [[tree layers-data] (build-tree graph)
-         layers-data (label-sizes tree layers-data)
-         layers-data (label-angles tree layers-data)
-         {:keys [width height radius]
+   (let [{:keys [width height radius sort-children]
             :or {width (width graph) height (height graph)
-                 radius 180}}
+                 radius 180
+                 sort-children identity}}
          options
          width (if (nil? width) 1900 width)
          height (if (nil? height) 1200 height)
-         ;; _ (do (prn "layers-data =") (pprint layers-data))
-         graph (place-nodes graph tree layers-data width height radius)]
+         [tree layers-data] (build-tree graph)
+         layers-data (label-sizes tree layers-data)
+         layers-data (label-angles tree layers-data)
+         graph (place-nodes graph tree layers-data width height radius
+                            sort-children)]
      graph)
    ))
 
