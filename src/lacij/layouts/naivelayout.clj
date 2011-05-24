@@ -119,7 +119,7 @@
              (printf "e1 = %s e2 = %s e = %s\n" e1 e2 e))
            e)))))
 
-(defn neighbour
+(defn- neighbour
   [width height graph]
   (let [id (rand-nth (nodes graph))]
     (move-node graph id (rand-int (- width 100)) (rand-int (- height 50)))))
