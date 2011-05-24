@@ -16,7 +16,9 @@
         lacij.graph.svg.graph
         lacij.utils.core
         lacij.layouts.core
-        lacij.layouts.layout))
+        lacij.layouts.layout
+        lacij.opt.annealing)
+  (:require [clojure.set :as set]))
 
 (defn assoc-node-to-layer
   "Updates the layer-data structures and set the layer of a 
@@ -161,7 +163,7 @@
             x (+ x center-x)
             y (- center-y y)
             graph (move-node graph child x y)
-            children-of-child (sort-children (in-children tree child))
+            children-of-child (sort-children graph (in-children tree child))
             reschildren (concat res (assoc-children-data
                                      layers-data
                                      children-of-child
@@ -183,10 +185,88 @@
         center-y (double (/ height 2))
         graph (move-node graph rootnode center-x center-y)
         children (assoc-children-data
-                  layers-data (sort-children (in-children tree rootnode))
+                  layers-data (sort-children graph (in-children tree rootnode))
                   0 1 center-x center-y)]
     ;; (printf "root-node = %s center-x %s center-y %s\n" rootnode center-x center-y)
-        (place-nodes-helper graph tree layers-data radius children sort-children)))
+    (place-nodes-helper graph tree layers-data radius children sort-children)))
+
+;;; sort-children functions:
+
+(defn indexed
+  "Returns the collection as a collection of indexed element.
+   Each indexed element is a vector [idx element]."
+  [coll]
+  (map vector (iterate inc 0) coll))
+
+(defn proximity
+  "Returns the proximity value between one child and one sibling, or the 
+   sum of proximity values of one child and its other siblings.
+
+   The proximity value of one child and one sibling is 0 if they have 
+   no in-children in common, otherwise it is the value of the distance 
+   between the indexes of the two siblings. "
+  ([graph idxchild1 child1 idxchild2 child2]
+     (let [children1 (in-children graph child1)
+           children2 (in-children graph child2)
+           stmt-in-common (not (empty? (set/intersection (set children1)
+                                                         (set children2))))]
+       (if stmt-in-common
+         (inc (Math/abs (- idxchild2 idxchild1)))
+         0)))
+  ([graph [idxchild child] siblings]
+     (reduce (fn [sum indexed-child2]
+               (+ sum (proximity graph
+                                 idxchild
+                                 child
+                                 (first indexed-child2)
+                                 (second indexed-child2))))
+             0
+             siblings)))
+
+(defn entropy
+  "Returns the entropy of a collection of children.
+   The entropy is the sum of all proximity values for
+   each children."
+  [graph children]
+  (let [indexed-children (indexed children)
+        set-indexed-children (set indexed-children)
+        size (count children)]
+    (reduce (fn [sum n]
+              (let [indexed-child (nth indexed-children n)
+                    siblings (set/difference set-indexed-children #{indexed-child})]
+                (+ sum (proximity graph indexed-child siblings))))
+            0
+            (range size))))
+
+(defn swap
+  "Swaps elements with indexes idx1 and idx2 in the vector coll."
+  [coll idx1 idx2]
+  (let [e1 (get coll idx1)
+        e2 (get coll idx2)]
+   (assoc coll idx1 e2 idx2 e1)))
+
+(defn neighbour
+  "Swaps randomly two elements in vector coll."
+  [coll]
+  (let [size (count coll)
+        e1 (rand-int size)
+        e2 (rand-int size)]
+    (swap coll e1 e2)))
+
+(defn neg-entropy
+  "Returns the negated value of the entropy function."
+  [graph children]
+  (- (entropy graph children)))
+
+(defn default-sort-children
+  "The default sorting function for the radial layout algorithms.
+   A simulatead annealing is used to reduce the number of crossings, i.e.
+   to reduce the entropy of each layer."
+  [graph children]
+  (if (seq children)
+    (optimize (vec children) (partial neg-entropy graph) neighbour
+              :temp 20 :iterations 50 :calibration false)
+    children))
 
 (defrecord RadialLayout
     []
@@ -196,22 +276,24 @@
    [this graph options]
    ;; Layouts the graph radially.
    ;;
-   ;;  Options are: width, height, radius.
-   ;;
+   ;;  Options are: width, height, radius and
+   ;;  sort-children, a function to sort the children. The default function
+   ;;  tries to minimize the crossing
    (let [{:keys [width height radius sort-children]
             :or {width (width graph) height (height graph)
-                 radius 180
-                 sort-children identity}}
+                 radius 180}}
          options
          width (if (nil? width) 1900 width)
          height (if (nil? height) 1200 height)
          [tree layers-data] (build-tree graph)
          layers-data (label-sizes tree layers-data)
          layers-data (label-angles tree layers-data)
+         sort-children-fn (if (nil? sort-children)
+                            default-sort-children
+                            sort-children)
          graph (place-nodes graph tree layers-data width height radius
-                            sort-children)]
-     graph)
-   ))
+                            sort-children-fn)]
+     graph)))
 
 (defn radiallayout
   []
