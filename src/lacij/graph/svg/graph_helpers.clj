@@ -23,7 +23,8 @@
 
 (defn create-node
   [id params node-styles node-attrs node-view-factory]
-  (let [{:keys [label x y style shape] :or {shape :rect style {}}}
+  (let [{:keys [label x y style shape] :or {shape :rect style {}
+                                            x 0 y 0}}
         (merge node-attrs params)
         attrs (dissoc params :label :x :y :style :shape)
         node-view (create-node-view id shape x y
