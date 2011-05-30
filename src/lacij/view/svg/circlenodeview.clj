@@ -18,7 +18,7 @@
 
   (node-center
    [this]
-   [x y])
+   [(+ x radius) (+ y radius)])
 
   (node-x
    [this]
@@ -39,15 +39,16 @@
   (view-node
    [this node context]
    (let [{:keys [doc]} context
+         [xcenter ycenter] (node-center this)
          ;; TODO: use the position indicator
          texts (map (fn [label]
                       (let [txt (text label)
                             pos (position label)]
-                        (-> (s/text {:x x :y y :text-anchor "middle"} txt)
+                        (-> (s/text {:x xcenter :y ycenter :text-anchor "middle"} txt)
                             (s/style :dominant-baseline :central))))
                     labels)
          xml (concat (s/group
-                      (-> (s/circle x y radius)
+                      (-> (s/circle xcenter ycenter radius)
                           (apply-styles default-style style)
                           (apply-attrs (merge attrs {:id (name id)}))))
                      texts)]
@@ -55,17 +56,17 @@
 
   (ports
    [this]
-   (map (fn [angle]
-          (let [ra (Math/toRadians angle)]
-            [(double (+ x (* radius (Math/cos ra))))
-             (double (+ y (* radius (Math/sin ra))))]))
-        (range 0 360 22)))
+    (let [[xcenter ycenter] (node-center this)]
+     (map (fn [angle]
+            (let [ra (Math/toRadians angle)]
+              [(double (+ xcenter (* radius (Math/cos ra))))
+               (double (+ ycenter (* radius (Math/sin ra))))]))
+          (range 0 360 22))))
 
   (bounding-box
    [this]
    (let [margin 5]
-    [(- x radius margin) (- y radius margin) (+ radius (* 2 margin)) (+ radius (* 2 margin))]))
-  )
+    [(- x margin) (- y margin) (+ (* 2 radius) (* 2 margin)) (+ (* 2 radius) (* 2 margin))])))
 
 (defn import-circle
   [xmlcontent file-id id x y]
