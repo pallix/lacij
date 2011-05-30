@@ -151,12 +151,21 @@
    )
 
   (move-node
-   [this id x y]
-   (let [node (get nodes id)
-         current-view (node-view node)
-         new-view (assoc current-view :x x :y y)
-         node (change-node-view node new-view)]
-     (update-in this [:nodes] assoc id node)))
+    [this id x y]
+    (let [node (get nodes id)
+          current-view (node-view node)
+          new-view (assoc current-view :x x :y y)
+          node (change-node-view node new-view)]
+      (update-in this [:nodes] assoc id node)))
+
+  (move-node-center
+    [graph id x y]
+    (let [[xbox ybox width height] (bounding-box (node-view (node graph id)))
+          xdelta (- (double (/ width 2)))
+          ydelta (- (double (/ height 2)))
+          destx (+ x xdelta)
+          desty (+ y ydelta)]
+      (move-node graph id destx desty)))
 
   (add-listener-vec
    [this id type f args]

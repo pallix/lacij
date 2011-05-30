@@ -162,7 +162,7 @@
             y (* r (Math/cos angle-radian))
             x (+ x center-x)
             y (- center-y y)
-            graph (move-node graph child x y)
+            graph (move-node-center graph child x y)
             children-of-child (sort-children graph (in-children tree child))
             reschildren (concat res (assoc-children-data
                                      layers-data
@@ -183,7 +183,7 @@
   (let [rootnode (ffirst (:layers layers-data))
         center-x (double (/ width 2))
         center-y (double (/ height 2))
-        graph (move-node graph rootnode center-x center-y)
+        graph (move-node-center graph rootnode center-x center-y)
         children (assoc-children-data
                   layers-data (sort-children graph (in-children tree rootnode))
                   0 1 center-x center-y)]

@@ -25,7 +25,8 @@
   (export-kv [this filename options])
   (set-node-view-factory [this f])
   (set-node-view [this id view])
-  (move-node [this id x y]))
+  (move-node [this id x y])
+  (move-node-center [this id x y]))
 
 (defprotocol DynamicGraph
   (add-node-kv! [this id params])
