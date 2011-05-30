@@ -43,9 +43,19 @@
          ;; TODO: use the position indicator
          texts (map (fn [label]
                       (let [txt (text label)
-                            pos (position label)]
-                        (-> (s/text {:x xcenter :y ycenter :text-anchor "middle"} txt)
-                            (s/style :dominant-baseline :central))))
+                            pos (position label)
+                            style (nodelabel-style label)
+                            font-size (:font-size style)
+                            dy (if (nil? font-size)
+                                 15 ;; what is the default font-size?
+                                 font-size)]
+                        (->
+                         (if (string? txt)
+                           (s/text {:x xcenter :y ycenter :text-anchor "middle"}
+                                   txt)
+                           (apply s/text {:x xcenter :y y :text-anchor "middle"}
+                                  (map #(s/tspan {:dy dy :x xcenter} %) txt)))
+                         (apply-styles {:dominant-baseline :central} style))))
                     labels)
          xml (concat (s/group
                       (-> (s/circle xcenter ycenter radius)
