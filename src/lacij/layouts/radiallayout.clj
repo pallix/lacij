@@ -17,7 +17,8 @@
         lacij.utils.core
         lacij.layouts.core
         lacij.layouts.layout
-        lacij.opt.annealing)
+        lacij.opt.annealing
+        lacij.layouts.utils.position)
   (:require [clojure.set :as set]))
 
 (defn assoc-node-to-layer
@@ -292,7 +293,8 @@
                             default-sort-children
                             sort-children)
          graph (place-nodes graph tree layers-data width height radius
-                            sort-children-fn)]
+                            sort-children-fn)
+         graph (make-graph-visible graph)]
      graph)))
 
 (defn radiallayout
