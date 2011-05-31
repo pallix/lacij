@@ -274,7 +274,7 @@
 (def end-arrow-marker
   [:lacij-end-arrow-marker
    [:marker {:viewBox "0 0 10 10"
-             :refX 8
+             :refX 10
              :refY 5
              :markerUnits "strokeWidth"
              :orient "auto"
