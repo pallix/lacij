@@ -50,9 +50,6 @@
     (let [{:keys [label style]} params
           rest-params (dissoc params :label :style)
           edgeattrs (merge edge-attrs rest-params)
-          edgeattrs (if (:marker-end edgeattrs)
-                      edgeattrs
-                      (dissoc edgeattrs :marker-end))
           edgeview (svgedgeview (merge edge-styles style) edgeattrs)
           edgeview (if (nil? label)
                      edgeview

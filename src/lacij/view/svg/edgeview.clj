@@ -34,14 +34,21 @@
                                      text)
                             (apply-styles {:dominant-baseline :central} style))))
                     labels)
+         attrs2 (dissoc attrs :marker-end)
          xml (concat
               (s/group
-               (-> (if (:marker-end attrs)
-                     (s/line x-src-port y-src-port x-dst-port y-dst-port
+               (-> (cond (= ::not-found (get attrs :marker-end ::not-found))
+                         (s/line x-src-port y-src-port x-dst-port y-dst-port
                              :marker-end "url(#lacij-end-arrow-marker)")
-                     (s/line x-src-port y-src-port x-dst-port y-dst-port))
+
+                         (nil? (get attrs :marker-end ::not-found))
+                         (s/line x-src-port y-src-port x-dst-port y-dst-port)
+
+                         :else
+                         (s/line x-src-port y-src-port x-dst-port y-dst-port
+                                 :marker-end (:marker-end attrs)))
                    (apply-styles {:stroke "#000000" :stroke-width 1} style)
-                   (apply-attrs attrs)))
+                   (apply-attrs attrs2)))
               texts)]
      (dom/elements doc *svg-ns* xml)
      ))
