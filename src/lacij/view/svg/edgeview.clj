@@ -36,8 +36,10 @@
                     labels)
          xml (concat
               (s/group
-               (-> (s/line  x-src-port y-src-port x-dst-port y-dst-port
-                            :marker-end "url(#lacij-end-arrow-marker)")
+               (-> (if (:marker-end attrs)
+                     (s/line x-src-port y-src-port x-dst-port y-dst-port
+                             :marker-end "url(#lacij-end-arrow-marker)")
+                     (s/line x-src-port y-src-port x-dst-port y-dst-port))
                    (apply-styles {:stroke "#000000" :stroke-width 1} style)
                    (apply-attrs attrs)))
               texts)]

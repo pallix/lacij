@@ -47,15 +47,19 @@
   
   (add-edge-kv
    [this id id-node-src id-node-dst params]
-   (let [{:keys [label style]} params
-         rest-params (dissoc params :label :style)
-         edgeview (svgedgeview (merge edge-styles style) (merge edge-attrs rest-params))
-         edgeview (if (nil? label)
-                    edgeview
-                    (add-edge-label edgeview (edgelabelview label :center)))
-         edge (svgedge id edgeview id-node-src id-node-dst)
-         graph (update-node-edges this id id-node-src id-node-dst)]
-     (update-in graph [:edges] assoc id edge)))
+    (let [{:keys [label style]} params
+          rest-params (dissoc params :label :style)
+          edgeattrs (merge edge-attrs rest-params)
+          edgeattrs (if (:marker-end edgeattrs)
+                      edgeattrs
+                      (dissoc edgeattrs :marker-end))
+          edgeview (svgedgeview (merge edge-styles style) edgeattrs)
+          edgeview (if (nil? label)
+                     edgeview
+                     (add-edge-label edgeview (edgelabelview label :center)))
+          edge (svgedge id edgeview id-node-src id-node-dst)
+          graph (update-node-edges this id id-node-src id-node-dst)]
+      (update-in graph [:edges] assoc id edge)))
 
   (add-label-kv
    [this id label params]
