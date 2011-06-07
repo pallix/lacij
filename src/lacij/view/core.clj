@@ -23,6 +23,7 @@
   (add-node-styles-kv [this styles])
   (add-node-decorator [this decorator])
   (remove-node-decorator [this decorator])
+  (node-decorators [this])
   (node-selection-decorator [this])
   (contains-pt? [this x y])
   (bounding-box [this]))

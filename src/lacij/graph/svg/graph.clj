@@ -99,6 +99,13 @@
    [this def]
    (update-in this [:defs] conj def))
 
+  (add-decorator
+    [this id decorator]
+    (let [view (node-view (node this id))
+          view (add-node-decorator view decorator)
+          node (svgnode id view)]
+      (update-in this [:nodes] assoc id node)))
+  
   (node
    [this id]
    (get nodes id))

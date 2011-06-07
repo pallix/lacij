@@ -16,6 +16,7 @@
   (add-default-edge-style-kv [this edge-styles])
   (add-default-edge-attrs-kv [this edge-attrs])
   (add-def [this def])
+  (add-decorator [this id decorator])
   (node [this id])
   (nodes [this])
   (edge [this id])

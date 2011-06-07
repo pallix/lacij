@@ -96,6 +96,10 @@
    [this decorator]
    (update-in this [:decorators] disj decorator))
 
+  (node-decorators
+    [this]
+    decorators)
+
   (node-selection-decorator
    [this]
    *selection-decorator*
