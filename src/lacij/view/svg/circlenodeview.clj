@@ -13,7 +13,7 @@
   (:import java.lang.Math))
 
 (defrecord SvgCircleNodeView
-    [id x y radius labels default-style style attrs]
+    [id x y radius labels default-style style attrs decorators]
   NodeView
 
   (node-center
@@ -27,6 +27,14 @@
   (node-y
    [this]
    y)
+
+  (node-width
+    [this]
+    (* 2 radius))
+
+  (node-height
+    [this]
+    (* 2 radius))
 
   (add-node-label
    [this label]
@@ -73,6 +81,18 @@
                (double (+ ycenter (* radius (Math/sin ra))))]))
           (range 0 360 22))))
 
+  (add-node-decorator
+   [this decorator]
+   (update-in this [:decorators] conj decorator))
+
+  (remove-node-decorator
+   [this decorator]
+   (update-in this [:decorators] disj decorator))
+
+  (node-decorators
+    [this]
+    decorators)
+
   (bounding-box
    [this]
    (let [margin 5]
@@ -86,4 +106,4 @@
         attrs (dissoc attrs :r :style :x :y :id :cx :cy)
         style (s/parse-inline-css style)
         r (Double/parseDouble r)]
-    (SvgCircleNodeView. id x y r [] {} style attrs)))
+    (SvgCircleNodeView. id x y r [] {} style attrs #{})))
