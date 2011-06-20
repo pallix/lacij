@@ -7,8 +7,7 @@
         lacij.view.core))
 
 (defn make-graph-visible
-  "Translates all nodes in the graph
-   to make all nodes' coordinates positives."
+  "Translates all nodes in the graph to make all nodes' coordinates positives."
   [graph]
   (let [ids (nodes graph)
         fnode (node graph (first ids))
@@ -45,3 +44,50 @@
                  (move-node graph nid destx desty)))
               graph
               (nodes graph)))))
+
+(defn best-node
+  [graph val cmp]
+  (reduce (fn [maxid id]
+            (if (cmp (val id) (val maxid))
+              id
+              maxid))
+          (nodes graph)))
+
+(defn lowest-node
+  [graph]
+  (best-node graph
+             (fn [id]
+               (let [view (node-view (node graph id))
+                     [_ y _ height] (bounding-box view)]
+                 (+ y height)))
+             >))
+
+(defn rightest-node
+  [graph]
+  (best-node graph
+             (fn [id]
+               (let [view (node-view (node graph id))
+                     [x _ width _] (bounding-box view)]
+                 (+ x width)))
+             >))
+
+(defn round-up
+  [x]
+  (int (Math/ceil x)))
+
+(defn adjust-size
+  "adjusts the width, the height and the viewBox of the graph"
+  [graph]
+  (let [low (lowest-node graph)
+        view (node-view (node graph low))
+        [_ y _ h] (bounding-box view)
+        ylow (+ y h)
+        right (rightest-node graph)
+        viewright (node-view (node graph right))
+        [x _ w _] (bounding-box viewright)
+        xright (+ x w)
+        spacing 10]
+    (assoc graph :width (round-up xright) :height (round-up ylow)
+           :viewBox (format "0 0 %d %d" (round-up (+ xright spacing))
+                            (round-up (+ ylow spacing))))))
+

@@ -17,7 +17,7 @@
   (view-graph
    [this graph context]
    (let [defs (s/defs (apply concat (:defs context)))
-         {:keys [doc width height]} context
+         {:keys [doc width height viewBox]} context
          markers-def (dom/elements doc *svg-ns* defs)
          node-elements (map (fn [nodeid]
                               (let [n (node graph nodeid)]
@@ -43,6 +43,8 @@
        (dom/add-attrs doc-element :width width))
      (when height
        (dom/add-attrs doc-element :height height))
+     (when viewBox
+       (dom/add-attrs doc-element :viewBox viewBox))
      (dom/append-child  doc-element markers-def)
      (dom/append-children doc-element node-elements)
      (dom/append-children doc-element decorators-elements)

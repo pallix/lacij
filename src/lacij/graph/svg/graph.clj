@@ -21,6 +21,7 @@
     [xmldoc
      width
      height
+     viewBox
      svgcanvas
      nodes
      edges
@@ -124,7 +125,8 @@
 
   (build
    [this]
-   (view-graph graphview this {:defs defs :doc xmldoc :width width :height height})
+   (view-graph graphview this {:defs defs :doc xmldoc :width width :height height
+                               :viewBox viewBox})
    (set-document svgcanvas xmldoc)
    ;; set initial state:
    (swap! history add-state (graphstate this))
@@ -293,7 +295,8 @@
 
 (defn create-graph
   [& options]
-  (let [{:keys [width height]} options
+  (let [{:keys [width height viewBox]
+         :or {viewBox nil}} options
         view (graphview)
         xmldoc (dom/create-document (dom-implementation) *svg-ns* "svg" nil)
         svgcanvas (jsvgcanvas)
@@ -303,6 +306,7 @@
     (SvgGraph. xmldoc
                width
                height
+               viewBox
                svgcanvas
                {} ;; nodes
                {} ;; edges

@@ -294,7 +294,8 @@
                             sort-children)
          graph (place-nodes graph tree layers-data width height radius
                             sort-children-fn)
-         graph (make-graph-visible graph)]
+         graph (make-graph-visible graph)
+         graph (adjust-size graph)]
      graph)))
 
 (defn radiallayout
