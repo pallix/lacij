@@ -46,9 +46,9 @@
      (when viewBox
        (dom/add-attrs doc-element :viewBox viewBox))
      (dom/append-child  doc-element markers-def)
+     (dom/append-children doc-element edge-elements)
      (dom/append-children doc-element node-elements)
      (dom/append-children doc-element decorators-elements)
-     (dom/append-children doc-element edge-elements)
      doc))
 
   (export-graph
