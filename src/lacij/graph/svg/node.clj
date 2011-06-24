@@ -27,7 +27,7 @@
 
   (inout-edges
    [this]
-   (apply conj (in-edges this) (out-edges this))))
+   (into (in-edges this) (out-edges this))))
 
 (defn svgnode
   [id view]
