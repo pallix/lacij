@@ -37,7 +37,8 @@
                               (let [e (edge graph edgeid)]
                                (view-edge (edge-view e) graph e context)))
                             (edges graph))
-         doc-element (dom/document-element doc)]
+         doc-element (dom/document-element doc)
+         mastergroup-element (dom/elements doc *svg-ns* [:g {:id "graph0"}])]
      (dom/add-attrs doc-element :overflow "visible")
      (when width
        (dom/add-attrs doc-element :width width))
@@ -45,10 +46,11 @@
        (dom/add-attrs doc-element :height height))
      (when viewBox
        (dom/add-attrs doc-element :viewBox viewBox))
-     (dom/append-child  doc-element markers-def)
-     (dom/append-children doc-element edge-elements)
-     (dom/append-children doc-element node-elements)
-     (dom/append-children doc-element decorators-elements)
+     (dom/append-child doc-element markers-def)
+     (dom/append-child doc-element mastergroup-element)
+     (dom/append-children mastergroup-element edge-elements)
+     (dom/append-children mastergroup-element node-elements)
+     (dom/append-children mastergroup-element decorators-elements)
      doc))
 
   (export-graph
