@@ -69,18 +69,19 @@
 
 (defn build-tree
   "Builds a tree from the graph and returns the layering information."
-  [graph]
-  (let [rootnode (find-root graph)
-        tree (create-graph)
-        tree (add-node tree rootnode (str (name rootnode)))
-        layers-data {:layers [(list rootnode)] :nodes {rootnode {:layer 0}}}
-        [tree layers-data] (build-tree-helper graph
-                                              [rootnode]
-                                              #{rootnode}
-                                              1
-                                              tree
-                                              layers-data)]
-    [tree layers-data]))
+  ([graph rootnode]
+     (let [tree (create-graph)
+           tree (add-node tree rootnode (str (name rootnode)))
+           layers-data {:layers [(list rootnode)] :nodes {rootnode {:layer 0}}}
+           [tree layers-data] (build-tree-helper graph
+                                                 [rootnode]
+                                                 #{rootnode}
+                                                 1
+                                                 tree
+                                                 layers-data)]
+       [tree layers-data]))
+  ([graph]
+     (build-tree graph (find-root graph))))
 
 (defn leafs
   "Returns the leafs of a node in the tree."
@@ -280,13 +281,15 @@
    ;;  Options are: width, height, radius and
    ;;  sort-children, a function to sort the children. The default function
    ;;  tries to minimize the crossing
-   (let [{:keys [width height radius sort-children]
+   (let [{:keys [width height radius sort-children root]
             :or {width (width graph) height (height graph)
                  radius 180}}
          options
          width (if (nil? width) 1900 width)
          height (if (nil? height) 1200 height)
-         [tree layers-data] (build-tree graph)
+         [tree layers-data] (if (nil? root)
+                              (build-tree graph)
+                              (build-tree graph root))
          layers-data (label-sizes tree layers-data)
          layers-data (label-angles tree layers-data)
          sort-children-fn (if (nil? sort-children)
