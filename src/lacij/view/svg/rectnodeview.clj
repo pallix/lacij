@@ -49,6 +49,7 @@
    [this node context]
     (let [{:keys [doc tmpdecorators]} context
          [x-center y-center] (node-center this)
+         xmargin 5
          ;; TODO: use the position indicator
          texts (map (fn [label]
                       (let [txt (text label)
@@ -62,8 +63,8 @@
                          (if (string? txt)
                            (s/text {:x x-center :y y-center :text-anchor "middle"}
                                    txt)
-                           (apply s/text {:x x :y y :text-anchor "start"}
-                                  (map #(s/tspan {:dy dy :x x} %) txt)))
+                           (apply s/text {:x (+ x xmargin) :y y :text-anchor "start"}
+                                  (map #(s/tspan {:dy dy :x (+ x xmargin)} %) txt)))
                          (apply-styles {:dominant-baseline :central} style))))
                     labels)
          decorations (map #(decorate % this context) (concat decorators tmpdecorators))
