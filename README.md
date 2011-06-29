@@ -5,6 +5,10 @@ and the dynamic modification of graphs as SVG documents that can be viewed
 with a Web browser or with a Swing component. Undo/redo is supported for the
 dynamic modification. Automatic layout is provided for the visualization.
 
+## Presentation
+
+<iframe src="https://docs.google.com/present/embed?id=dsjwfrk_1js9ptkcd" frameborder="0" width="410" height="342"></iframe>
+
 ## Usage
 
 ### Example 1: creating a simple graph and exporting it as SVG.
