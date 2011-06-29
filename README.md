@@ -71,18 +71,9 @@ See [http://www.graphviz.org/Theory.php](http://www.graphviz.org/Theory.php) for
 
 The algorithm defined in the following paper is currently being implemented:
 
-@article{wills1999nicheworks,
-  title={{NicheWorks: Interactive visualization of very large graphs}},
-  author={Wills, G.J.},
-  journal={Journal of Computational and Graphical Statistics},
-  volume={8},
-  number={2},
-  pages={190--212},
-  issn={1061-8600},
-  year={1999},
-  publisher={JSTOR}
- }
-
+How to draw a directed graph by Peter Eades, Kozo Sugiyama 
+Journal of Information Processing (1990)
+Volume: 13, Issue: 4, Publisher: IEEE, Pages: 13-17
 
 ## License
 
