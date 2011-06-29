@@ -7,9 +7,8 @@ dynamic modification. Automatic layout is provided for the visualization.
 
 ## Presentation
 
-
-<iframe src="https://docs.google.com/present/embed?id=dsjwfrk_1js9ptkcd" frameborder="0" width="410" height="342"></iframe>
-
+An online presentation of Lacij, dated from June 2011, can be found here:
+https://docs.google.com/present/view?id=dsjwfrk_1js9ptkcd
 
 ## Usage
 
