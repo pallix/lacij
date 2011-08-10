@@ -10,6 +10,8 @@
   (height [this])
   (add-node-kv [this id params])
   (add-edge-kv [this id id-node-src id-node-dst params])
+  (add-segmented-edge-kv [this id id-node-src id-node-dst params points])
+  (remove-edge [this n1 n2])
   (add-label-kv [this id label params])
   (add-default-node-style-kv [this node-styles])
   (add-default-node-attrs-kv [this node-attrs]) 
@@ -150,6 +152,19 @@
   [graph nid]
   (let [n (node graph nid)]
    (concat (map #(src (edge graph %)) (in-edges n)))))
+
+(defn out-children
+  "Returns all dst nodes of all out-edges for the node nid."
+  [graph nid]
+  (let [n (node graph nid)]
+   (concat (map #(dst (edge graph %)) (out-edges n)))))
+
+(defn inout-children
+  "Returns all src nodes of all inout-edges for the node nid."
+  [graph nid]
+  (let [n (node graph nid)]
+   (concat (map #(src (edge graph %)) (in-edges n))
+           (map #(dst (edge graph %)) (out-edges n)))))
 
 (defn find-root
   "Returns the root of the graph. The root is the node

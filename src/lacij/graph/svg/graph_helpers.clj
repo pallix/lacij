@@ -109,3 +109,14 @@
         (dom/append-child docelement el)))
     graph
 ))
+
+(defn remove-edge-by-id
+  [this id]
+  (let [e (edge this id)
+        s (src e)
+        d (dst e)
+        graph this
+        graph (update-in graph [:edges] dissoc id)
+        graph (update-in graph [:nodes s :outedges] disj id)
+        graph (update-in graph [:nodes d :inedges] disj id)]
+    graph))

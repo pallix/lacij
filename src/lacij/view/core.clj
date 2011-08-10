@@ -31,6 +31,7 @@
 (defprotocol EdgeView
   (view-edge [this graph edge context])
   (add-edge-label [this label])
+  (edge-labels [this])
   (edge-location [this graph edge]))
 
 (defprotocol NodeLabelView

@@ -10,7 +10,7 @@
         lacij.graph.core
         (lacij.graph.svg node edge)
         lacij.view.core
-        (lacij.view.svg graphview nodeview edgeview nodelabelview edgelabelview)
+        (lacij.view.svg graphview nodeview edgeview segmentededgeview nodelabelview edgelabelview)
         (lacij.graph.svg graph-helpers history graph-history))
   (:require [tikkba.utils.dom :as dom])
   (:import (javax.swing.undo UndoManager UndoableEditSupport)))
@@ -47,7 +47,7 @@
      (update-in this [:nodes] assoc id node)))
   
   (add-edge-kv
-   [this id id-node-src id-node-dst params]
+    [this id id-node-src id-node-dst params]
     (let [{:keys [label style]} params
           rest-params (dissoc params :label :style)
           edgeattrs (merge edge-attrs rest-params)
@@ -58,6 +58,24 @@
           edge (svgedge id edgeview id-node-src id-node-dst)
           graph (update-node-edges this id id-node-src id-node-dst)]
       (update-in graph [:edges] assoc id edge)))
+
+  (add-segmented-edge-kv
+    [this id id-node-src id-node-dst params points]
+    (let [{:keys [label style]} params
+          rest-params (dissoc params :label :style)
+          edgeattrs (merge edge-attrs rest-params)
+          edgeview (svgsegmentededgeview (merge edge-styles style) edgeattrs points)
+          edgeview (if (nil? label)
+                     edgeview
+                     (add-edge-label edgeview (edgelabelview label :center)))
+          edge (svgedge id edgeview id-node-src id-node-dst)
+          graph (update-node-edges this id id-node-src id-node-dst)]
+      (update-in graph [:edges] assoc id edge)))
+
+  (remove-edge
+    [this n1 n2]
+    (let [eid (first (filter #(= (dst (edge this %)) n2) (:outedges (node this n1))))]
+      (remove-edge-by-id this eid)))
 
   (add-label-kv
    [this id label params]
@@ -170,7 +188,11 @@
 
   (move-node-center
     [graph id x y]
-    (let [[xbox ybox width height] (bounding-box (node-view (node graph id)))
+    (let [view (node-view (node graph id))
+          xbox (node-x view)
+          ybox (node-y view)
+          width (node-width view)
+          height (node-height view)
           xdelta (- (double (/ width 2)))
           ydelta (- (double (/ height 2)))
           destx (+ x xdelta)

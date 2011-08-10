@@ -2,19 +2,18 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Various utilities functions"}
-  lacij.utils.core)
+  lacij.utils.core
+  (:use clojure.pprint))
 
-(defn assign-defaults [m & kv]
-  (let [default-values (apply hash-map kv)]
-    (merge
-     default-values
-     (apply hash-map
-            (flatten
-             (map (fn [[k v :as pair]]
-                    (if (nil? v)
-                      [k (get default-values k)]
-                      pair))
-                  m))))))
+(def *debug* true)
+
+(defmacro p [x]
+  (let [s (str x " = ")]
+    (when *debug*
+     `(do
+        (prn ~s)
+        (pprint ~x)
+        (prn)))))
 
 (defn leafs-seq
   [branch? children root]
@@ -25,6 +24,56 @@
                    (mapcat leafs (children node)))))]
     (leafs root)))
 
+(defn graph-seq
+  "Returns a sequence of the nodes in the graph traversed with a depth-first manner"
+  [branch? children root]
+  (let [walk (fn walk [tovisit visited visited-nodes]
+               (let [[node & restnodes] tovisit]
+                 (cond (nil? node)
+                       visited-nodes
+
+                       (not (contains? visited node))
+                       (recur (concat restnodes (when (branch? node) (children node)))
+                              (conj visited node)
+                              (conj visited-nodes node))
+
+                       :else
+                       (recur restnodes visited visited-nodes))))]
+     (walk [root] #{} [])))
+
+(defn topological-seq
+  "Returns a topological sort of the nodes in the graph"
+  [branch? children root allnodes]
+  (let [walk (fn walk [node tovisit visited]
+               (if (contains? tovisit node)
+                 ;; not visited yet
+                 (let [[tovisit visited]
+                       (reduce (fn [[tovisit visited] n]
+                                 (walk n tovisit visited))
+                               [tovisit visited]
+                               (when (branch? node)
+                                 (children node)))]
+                   [(disj tovisit node) (conj visited node)])
+                 [tovisit visited]))]
+    (loop [[tovisit visited] (walk root (set allnodes) [])]
+      (if (seq tovisit)
+        ;; continues the process on nodes that were not reachable
+        ;; from the original root
+        (recur (walk (first tovisit) tovisit visited))
+        visited))))
+
+(defn divide
+  "Divides the collection into two collections of the same number of elements,
+   with the same order. If the number of elements in the collection is odd
+   then the first divided collection has one element more than the second."
+  [col]
+  (split-at (int (Math/ceil (/ (count col) 2))) col))
+
+(defn index-of
+  "Returns the index of an element in a collection. This performs
+   a linear search."
+  [col x]
+  (second (first (filter #(= (first %) x) (partition 2 (interleave col (iterate inc 0)))))))
 
 ;; from the joy of clojure book:
 

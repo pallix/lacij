@@ -20,6 +20,10 @@
    [this label]
    (update-in this [:labels] conj label))
 
+  (edge-labels
+    [this]
+    labels)
+
   (view-edge
    [this graph edge context]
    (let [{:keys [doc]} context
