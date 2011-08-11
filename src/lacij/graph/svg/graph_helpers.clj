@@ -77,10 +77,11 @@
   (let [xmldoc (:xmldoc graph)
         history (:history graph)
         el (dom/element-id xmldoc id)
+        graphel (dom/element-id xmldoc :graph0)
         docel (dom/document-element xmldoc)
         listeners (listeners-id graph id)
-        removeedit (node-removed-edit docel (dom/next-sibling el) el)
-        insertedit (node-inserted-edit docel nil new-el)
+        removeedit (node-removed-edit graphel (dom/next-sibling el) el)
+        insertedit (node-inserted-edit graphel nil new-el)
         graph (update-in graph [:nodes] assoc id new-node)
         graph (reduce (fn [graph [type f args]]
                         (update-listeners graph id type f args)) graph listeners)
