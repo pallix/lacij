@@ -16,7 +16,6 @@
         lacij.graph.svg.graph
         lacij.utils.core
         lacij.layouts.core
-        lacij.layouts.layout
         lacij.opt.annealing
         lacij.layouts.utils.position)
   (:require [clojure.set :as set]))

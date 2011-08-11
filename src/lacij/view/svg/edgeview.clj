@@ -5,6 +5,7 @@
   lacij.view.svg.edgeview
   (:use clojure.pprint
         tikkba.dom
+        lacij.utils.core
         lacij.geom.distance
         lacij.graph.core
         lacij.view.core
@@ -63,22 +64,30 @@
          src-ports (ports src-view)
          dst-view (node-view (node graph (dst edge)))
          dst-ports (ports dst-view)
-         [x1-line y1-line] (node-center src-view)
-         [x2-line y2-line] (node-center dst-view)
-         shortest-dist (first
-                        (sort-by
-                         :dist
-                         (for [x src-ports
-                               y dst-ports]
-                           {:dist (+ (distance (first x) (second x)
-                                               (first y) (second y))
-                                     (distance (first x) (second x) x1-line y1-line)
-                                     (distance (first y) (second y) x2-line y2-line))
-                            :src-port x
-                            :dst-port y})))]
-     (concat (:src-port shortest-dist) (:dst-port shortest-dist))))
-  
-  )
+         [x1 y1] (node-center src-view)
+         [x2 y2] (node-center dst-view)
+         dists
+         (sort-by
+          :dist
+          (for [srcport src-ports
+                dstport dst-ports]
+            {:dist (+ (distance (first srcport) (second srcport)
+                                (first dstport) (second dstport)))
+             :src-port srcport
+             :dst-port dstport}))
+         shortest-dist (first dists)
+         shortest-dists (get (group-by :dist dists) (:dist shortest-dist))]
+     (if (= (count shortest-dists) 1)
+       (concat (:src-port shortest-dist) (:dst-port shortest-dist))
+       ;; if several edges have the same length, we take the one
+       ;; that is closest to the center of the dst node
+       (let [disttocenter (fn [dist]
+                            (distance (first (:dst-port dist))
+                                      (second (:dst-port dist))
+                                      x2
+                                      y2))
+             shortest-dist (first (sort-by disttocenter shortest-dists))]
+         (concat (:src-port shortest-dist) (:dst-port shortest-dist)))))))
 
 (defn svgedgeview
   ([]
