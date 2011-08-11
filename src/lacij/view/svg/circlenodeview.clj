@@ -40,6 +40,10 @@
    [this label]
    (update-in this [:labels] conj label))
 
+  (add-node-styles-kv
+   [this styles]
+   (update-in this [:style] merge styles))
+
   (node-labels
    [this]
    labels)
