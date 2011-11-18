@@ -196,8 +196,9 @@
 (defn place-nodes
   "Given layers-data and a tree, assign x-y coordinates to the nodes
    of the graph to build a hierarchical layout. "
-  [graph tree layers-data width height radius sort-children] 
-  (let [rootnode (ffirst (:layers layers-data))
+  [graph tree layers-data options] 
+  (let [{:keys [width height radius sort-children]} options
+        rootnode (ffirst (:layers layers-data))
         center-x (double (/ width 2))
         center-y (double (/ height 2))
         ;; _ (do (pprint layers-data))
@@ -299,22 +300,18 @@
    ;;  Options are: width, height, radius and
    ;;  sort-children, a function to sort the children. The default function
    ;;  tries to minimize the crossing
-   (let [{:keys [width height radius sort-children root]
-            :or {width (width graph) height (height graph)
-                 radius 180}}
-         options
-         width (if (nil? width) 1900 width)
-         height (if (nil? height) 1200 height)
-         [tree layers-data] (if (nil? root)
+   (let [options (merge {:width (or (width graph) 1900)
+                         :height (or (height graph) 1200)
+                         :radius 180
+                         :sort-children default-sort-children
+                         :root nil}
+                        options)
+         [tree layers-data] (if (nil? (:root options))
                               (build-tree graph)
-                              (build-tree graph root))
+                              (build-tree graph (:root options)))
          layers-data (label-sizes tree layers-data)
          layers-data (label-angles tree layers-data)
-         sort-children-fn (if (nil? sort-children)
-                            default-sort-children
-                            sort-children)
-         graph (place-nodes graph tree layers-data width height radius
-                            sort-children-fn)
+         graph (place-nodes graph tree layers-data options)
          graph (make-graph-visible graph)
          graph (adjust-size graph)]
      graph)))
