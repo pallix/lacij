@@ -64,16 +64,6 @@
                  [:f8 :g2]
                  [:f9 :g2])))
 
-;; (defn gen-graph3
-;;   []
-;;   (-> (create-graph)
-;;       (add-edges [:b1 :a1]
-;;                  [:b2 :a1]
-;;                  [:b3 :a1]
-;;                  [:b4 :a2]
-;;                  [:b5 :a2]
-;;                  [:b6 :a2])))
-
 (defn gen-graph4
   []
   (-> (create-graph)
@@ -107,10 +97,6 @@
   []
   (let [g (-> (gen-graph2)
               (layout :hierarchical)
-              (build)
-              )]
-    ;; (pprint g)
-    ;; (spit "/tmp/hierarchical.dot" (gen-graphvizcontent ag statement-formatted))
-    (export g "/tmp/hierarchical.svg" :indent "yes")
-    ))
+              (build))]
+    (export g "/tmp/hierarchical.svg" :indent "yes")))
 
