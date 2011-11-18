@@ -166,19 +166,20 @@
    (concat (map #(src (edge graph %)) (in-edges n))
            (map #(dst (edge graph %)) (out-edges n)))))
 
-(defn find-root
-  "Returns the root of the graph. The root is the node
+(defn find-roots
+  "Returns a seq of the roots of the graph. The roots are the node
    with the minimum of out-edges"
   [graph]
-  (let [allnodes (nodes graph)]
+  (let [allnodes (nodes graph)
+        fnode (first allnodes)]
     (first
      (reduce
-      (fn [[rootid noutedges] nodeid]
+      (fn [[rootids noutedges] nodeid]
         (let [out (count (out-edges (node graph nodeid)))]
-          (if (< out noutedges)
-            [nodeid out]
-            [rootid noutedges])))
-      [(first allnodes) (count (out-edges (node graph (first allnodes))))]
+          (cond (< out noutedges) [[nodeid] out] ;; fewer out-edges than the current roots? discard them
+                (= out noutedges) [(conj rootids nodeid) noutedges] ;; the same number, add it
+                :else [rootids noutedges])))
+      [[fnode] (count (out-edges (node graph fnode)))]
       allnodes))))
 
 (def ^{:doc "Generates a unique id for an edge."} geneid (partial (comp keyword gensym) "e"))

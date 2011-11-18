@@ -65,6 +65,15 @@
       (recur graph nextborder visited (inc layer) tree layers-data))
     [tree layers-data]))
 
+(defn add-virtual-root
+  [graph virtualrootid roots]
+  (let [graph (add-node graph virtualrootid)
+        graph (reduce (fn [graph root]
+                        (add-edge graph (geneid) root virtualrootid))
+                      graph
+                      roots)]
+    graph))
+
 (defn build-tree
   "Builds a tree from the graph and returns the layering information."
   ([graph rootnode]
@@ -79,7 +88,15 @@
                                                  layers-data)]
        [tree layers-data]))
   ([graph]
-     (build-tree graph (find-root graph))))
+     (let [roots (find-roots graph)]
+       (if (= (count roots) 1)
+         (build-tree graph (first roots))
+         ;; if there are several roots, we add a virtual root node that
+         ;; becomes the unique root
+         (let [virtualrootid (gensym "virtualroot")
+               [tree layers-data] (build-tree (add-virtual-root graph virtualrootid roots)
+                                              virtualrootid)]
+           [tree (assoc layers-data :has-virtual-root true)])))))
 
 (defn leafs
   "Returns the leafs of a node in the tree."
@@ -128,7 +145,7 @@
   (get-in layers-data [:angle nid]))
 
 (defn assoc-children-data
-  "Calculates variious information for each node, such as the absolute angles
+  "Calculates various information for each node, such as the absolute angles
    and assoc them to the layers-data map."
   [layers-data children offset layer center-x center-y]
   (first
@@ -183,7 +200,10 @@
   (let [rootnode (ffirst (:layers layers-data))
         center-x (double (/ width 2))
         center-y (double (/ height 2))
-        graph (move-node-center graph rootnode center-x center-y)
+        ;; _ (do (pprint layers-data))
+        graph (if (:has-virtual-root layers-data)
+                graph
+                (move-node-center graph rootnode center-x center-y))
         children (assoc-children-data
                   layers-data (sort-children graph (in-children tree rootnode))
                   0 1 center-x center-y)]
