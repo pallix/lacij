@@ -55,14 +55,15 @@
                       (let [txt (text label)
                             pos (position label)
                             style (nodelabel-style label)
-                            font-size (:font-size style)
-                            dy (if (nil? font-size)
-                                 15 ;; what is the default font-size?
-                                 font-size)
+                            font-size (or (:font-size (nodelabel-attrs label)) 12)
+                            dy font-size
                             text (if (string? txt)
-                                   (s/text {:x (by-two width) :y (by-two height) :text-anchor "middle"} txt)
-                                   (apply s/text {:text-anchor "start"}
-                                          (map #(s/tspan {:dy dy :x xmargin} %) txt)))]
+                                   (s/text {:x (by-two width) :y (by-two height) :text-anchor "middle"
+                                            :font-size font-size} txt)
+                                   (apply s/text {:text-anchor "start" :font-size font-size}
+                                          (map (fn [s]
+                                                 (s/tspan {:dy dy :x xmargin} s))
+                                               txt)))]
                         (apply-styles text {:dominant-baseline :central} style)))
                     labels)
          decorations (map #(decorate % this context) (concat decorators tmpdecorators))

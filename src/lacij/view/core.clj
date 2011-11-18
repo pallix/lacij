@@ -38,6 +38,7 @@
   (text [this])
   (position [this])
   (nodelabel-style [this])
+  (nodelabel-attrs [this])
   (nodelabel-position [this]))
 
 (defprotocol EdgeLabelView

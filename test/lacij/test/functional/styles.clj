@@ -18,9 +18,7 @@
       (add-edge :epaphus-zeus :epaphus :zeus)
       (add-node :perseus "Perseus" 600 150)
       (add-edge :perseus-zeus :perseus :zeus)
-      (add-label :father2 "son of" :style {:stroke "crimson"
-                                           :font-size "20px"
-                                           :font-style "italic"})
+      (add-label :father2 "son of" :font-size "20px" :font-style "italic" :style {:stroke "crimson"})
       (build)
       (export "/tmp/styles.svg")))
 
