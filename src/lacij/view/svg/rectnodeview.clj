@@ -58,19 +58,17 @@
                             font-size (:font-size style)
                             dy (if (nil? font-size)
                                  15 ;; what is the default font-size?
-                                 font-size)]
-                        (->
-                         (if (string? txt)
-                           (s/text {:x x-center :y y-center :text-anchor "middle"}
-                                   txt)
-                           (apply s/text {:x (+ x xmargin) :y y :text-anchor "start"}
-                                  (map #(s/tspan {:dy dy :x (+ x xmargin)} %) txt)))
-                         (apply-styles {:dominant-baseline :central} style))))
+                                 font-size)
+                            text (if (string? txt)
+                                   (s/text {:x (by-two width) :y (by-two height) :text-anchor "middle"} txt)
+                                   (apply s/text {:text-anchor "start"}
+                                          (map #(s/tspan {:dy dy :x xmargin} %) txt)))]
+                        (apply-styles text {:dominant-baseline :central} style)))
                     labels)
          decorations (map #(decorate % this context) (concat decorators tmpdecorators))
          xml (concat (s/group
-                      {:id (name id)}
-                      (-> (s/rect x y height width)
+                      {:id (name id) :transform (format "translate(%s, %s)" x y)}
+                      (-> [:rect {:height height :width width}]
                           (apply-styles default-style style)
                           (apply-attrs attrs)))
                      texts
