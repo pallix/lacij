@@ -76,7 +76,7 @@
   (int (Math/ceil x)))
 
 (defn adjust-size
-  "adjusts the width, the height and the viewBox of the graph"
+  "adjusts the width and the height"
   [graph]
   (let [low (lowest-node graph)
         view (node-view (node graph low))
@@ -87,7 +87,5 @@
         [x _ w _] (bounding-box viewright)
         xright (+ x w)
         spacing 10]
-    (assoc graph :width (round-up xright) :height (round-up ylow)
-           :viewBox (format "0 0 %d %d" (round-up (+ xright spacing))
-                            (round-up (+ ylow spacing))))))
+    (assoc graph :width (round-up xright) :height (round-up ylow))))
 
