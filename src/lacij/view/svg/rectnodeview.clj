@@ -4,18 +4,15 @@
 (ns ^{:doc "Implementation of the NodeView protocol for rectanguler nodes"}
   lacij.view.svg.rectnodeview
   (:use clojure.pprint
+        lacij.utils.core
         lacij.view.core
-        lacij.view.svg.utils.style
         lacij.view.svg.rectnodeselection
-        tikkba.dom)
+        tikkba.dom
+        [lacij.view.svg.utils style text])
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]
             [tikkba.utils.dom :as dom])
   (:import java.awt.Rectangle))
-
-(defn by-two
-  [i]
-  (/ i 2))
 
 (def *selection-decorator* (rectnodeselection))
 
@@ -48,32 +45,20 @@
   (view-node
    [this node context]
     (let [{:keys [doc tmpdecorators]} context
-         [x-center y-center] (node-center this)
-         xmargin 5
-         ;; TODO: use the position indicator
-         texts (map (fn [label]
-                      (let [txt (text label)
-                            pos (position label)
-                            style (nodelabel-style label)
-                            font-size (or (:font-size (nodelabel-attrs label)) 12)
-                            dy font-size
-                            text (if (string? txt)
-                                   (s/text {:x (by-two width) :y (by-two height) :text-anchor "middle"
-                                            :font-size font-size} txt)
-                                   (apply s/text {:text-anchor "start" :font-size font-size}
-                                          (map (fn [s]
-                                                 (s/tspan {:dy dy :x xmargin} s))
-                                               txt)))]
-                        (apply-styles text {:dominant-baseline :central} style)))
-                    labels)
-         decorations (map #(decorate % this context) (concat decorators tmpdecorators))
-         xml (concat (s/group
-                      {:id (name id) :transform (format "translate(%s, %s)" x y)}
-                      (-> [:rect {:height height :width width}]
-                          (apply-styles default-style style)
-                          (apply-attrs attrs)))
-                     texts
-                     decorations)]
+          [x-center y-center] (node-center this)
+          texts (view-labels labels {:x (by-two width)
+                                     :y (by-two height)
+                                     :xmargin 5
+                                     :text-anchor "middle"
+                                     :text-anchor-multi "start"})
+          decorations (map #(decorate % this context) (concat decorators tmpdecorators))
+          xml (concat (s/group
+                       {:id (name id) :transform (format "translate(%s, %s)" x y)}
+                       (-> [:rect {:height height :width width}]
+                           (apply-styles default-style style)
+                           (apply-attrs attrs)))
+                      texts
+                      decorations)]
       ;; (prn "xml =")
       ;; (pprint xml)
       (dom/elements doc *svg-ns* xml)))

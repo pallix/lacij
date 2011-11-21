@@ -7,6 +7,10 @@
 
 (def *debug* true)
 
+(defn by-two
+  [i]
+  (double (/ i 2)))
+
 (defmacro p [x]
   (let [s (str x " = ")]
     (when *debug*
@@ -100,3 +104,4 @@
     :prompt #(print "debug=> ")
     :read readr
     :eval (partial contextual-eval (local-context))))
+

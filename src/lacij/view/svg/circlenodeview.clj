@@ -4,9 +4,11 @@
 (ns ^{:doc "Implementation of the NodeView protocol for a circle"}
   lacij.view.svg.circlenodeview
   (:use clojure.pprint
+        lacij.utils.core
         lacij.view.core
         lacij.view.svg.utils.style
-        tikkba.dom)
+        tikkba.dom
+        [lacij.view.svg.utils style text])
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]
             [tikkba.utils.dom :as dom])
@@ -18,7 +20,7 @@
 
   (node-center
    [this]
-   [(+ x radius) (+ y radius)])
+   [x y])
 
   (node-x
    [this]
@@ -52,25 +54,12 @@
    [this node context]
    (let [{:keys [doc]} context
          [xcenter ycenter] (node-center this)
-         ;; TODO: use the position indicator
-         texts (map (fn [label]
-                      (let [txt (text label)
-                            pos (position label)
-                            style (nodelabel-style label)
-                            font-size (:font-size style)
-                            dy (if (nil? font-size)
-                                 15 ;; what is the default font-size?
-                                 font-size)]
-                        (->
-                         (if (string? txt)
-                           (s/text {:x xcenter :y ycenter :text-anchor "middle"}
-                                   txt)
-                           (apply s/text {:x xcenter :y y :text-anchor "middle"}
-                                  (map #(s/tspan {:dy dy :x xcenter} %) txt)))
-                         (apply-styles {:dominant-baseline :central} style))))
-                    labels)
+         texts (view-labels labels {:text-anchor "middle"
+                                    :text-anchor-multi "middle"
+                                    :y-multi (- (by-two radius))})
          xml (concat (s/group
-                      (-> (s/circle xcenter ycenter radius)
+                      {:id (name id) :transform (format "translate(%s, %s)" xcenter ycenter)}
+                      (-> [:circle {:r radius}]
                           (apply-styles default-style style)
                           (apply-attrs (merge attrs {:id (name id)}))))
                      texts)]
