@@ -89,7 +89,8 @@
   (bounding-box
    [this]
    (let [margin 5]
-    [(- x margin) (- y margin) (+ (* 2 radius) (* 2 margin)) (+ (* 2 radius) (* 2 margin))])))
+     [(- x radius margin) (- y radius margin)
+      (+ (* 2 radius) (* 2 margin)) (+ (* 2 radius) (* 2 margin))])))
 
 (defn import-circle
   [xmlcontent file-id id x y]
