@@ -20,7 +20,7 @@
 
   (node-center
    [this]
-   [x y])
+   [(+ x radius) (+ y radius)])
 
   (node-x
    [this]
@@ -53,13 +53,15 @@
   (view-node
    [this node context]
    (let [{:keys [doc]} context
-         [xcenter ycenter] (node-center this)
          texts (view-labels labels {:text-anchor "middle"
                                     :text-anchor-multi "middle"
-                                    :y-multi (- (by-two radius))})
+                                    :x radius
+                                    :y radius
+                                    :y-multi (by-two radius)
+                                    :xmargin radius})
          xml (concat (s/group
-                      {:id (name id) :transform (format "translate(%s, %s)" xcenter ycenter)}
-                      (-> [:circle {:r radius}]
+                      {:id (name id) :transform (format "translate(%s, %s)" x y)}
+                      (-> [:circle {:r radius :cx radius :cy radius}]
                           (apply-styles default-style style)
                           (apply-attrs (merge attrs {:id (name id)}))))
                      texts)]
@@ -89,7 +91,7 @@
   (bounding-box
    [this]
    (let [margin 5]
-     [(- x radius margin) (- y radius margin)
+     [(- x margin) (- y margin)
       (+ (* 2 radius) (* 2 margin)) (+ (* 2 radius) (* 2 margin))])))
 
 (defn import-circle
