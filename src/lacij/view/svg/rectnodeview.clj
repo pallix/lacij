@@ -51,14 +51,14 @@
                                      :xmargin 5
                                      :text-anchor "middle"
                                      :text-anchor-multi "start"})
-          decorations (map #(decorate % this context) (concat decorators tmpdecorators))
+          ;; all decorators should be handled by the graphview?
+          ;; decorations (map #(decorate % this context) tmpdecorators)
           xml (concat (s/group
                        {:id (name id) :transform (format "translate(%s, %s)" x y)}
                        (-> [:rect {:height height :width width}]
                            (apply-styles default-style style)
                            (apply-attrs attrs)))
-                      texts
-                      decorations)]
+                      texts)]
       ;; (prn "xml =")
       ;; (pprint xml)
       (dom/elements doc *svg-ns* xml)))
