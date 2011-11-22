@@ -62,6 +62,8 @@ Hierarchical Layout:
 Naive Layout (a simple layout used to test the library):
 ![Naive layout](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/layout1.png)
 
+## Learning by doing
+
 All the full examples and other examples can be found in the test directory.
 
 ## Contribution
@@ -72,11 +74,8 @@ See [http://www.graphviz.org/Theory.php](http://www.graphviz.org/Theory.php) for
 
 ## Work in progress
 
-The algorithm defined in the following paper is currently being implemented:
+Bug fixes and API improvements.
 
-How to draw a directed graph by Peter Eades, Kozo Sugiyama 
-Journal of Information Processing (1990)
-Volume: 13, Issue: 4, Publisher: IEEE, Pages: 13-17
 
 ## License
 
