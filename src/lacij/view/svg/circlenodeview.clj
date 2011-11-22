@@ -63,7 +63,7 @@
                       {:id (name id) :transform (format "translate(%s, %s)" x y)}
                       (-> [:circle {:r radius :cx radius :cy radius}]
                           (apply-styles default-style style)
-                          (apply-attrs (merge attrs {:id (name id)}))))
+                          (apply-attrs attrs)))
                      texts)]
      (dom/elements doc *svg-ns* xml)))
 
