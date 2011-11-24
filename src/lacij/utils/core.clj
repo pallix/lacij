@@ -9,7 +9,7 @@
 
 (defn by-two
   [i]
-  (double (/ i 2)))
+  (int (/ i 2)))
 
 (defmacro p [x]
   (let [s (str x " = ")]
