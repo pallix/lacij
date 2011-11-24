@@ -28,7 +28,7 @@
             (let [layer (get-layer n layers)
                   nodes-at-layer (get-in layers [:layer-to-node layer] #{})
                   nodes-at-layer (conj nodes-at-layer n)]
-              (assoc-in layers [:layer-to-node layer] nodes-at-layer)))
+              (assoc-in layers [:layer-to-node layer] (sort nodes-at-layer))))
           layers
           (keys (:node-to-layer layers))))
 
@@ -47,7 +47,7 @@
   [context]
   (let [graph (:graph context)
         topology (topological-seq (constantly true) #(in-children graph %)
-                                  (first (nodes graph)) (nodes graph))
+                                  (first (sort (nodes graph))) (sort (nodes graph)))
         layers (reduce (fn [layers n]
                          (update-layers graph n layers))
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
@@ -154,10 +154,24 @@
   [graph dummy-nodes n]
   (x-priority graph dummy-nodes n in-edges))
 
+(defn- stable-sort
+  [prioritized-nodes]
+  ;; {:pre [(do (prn "in =")
+  ;;            (pprint prioritized-nodes)
+  ;;            true)]
+  ;;  :post [(do (prn "out =")
+  ;;             (pprint %)
+  ;;             true)]}
+  (let [p (group-by second prioritized-nodes)]
+    (reduce (fn [res idx]
+              (concat res (sort (map first (get p idx)))))
+            []
+            (sort-by identity > (keys p)))))
+
 (defn- sort-by-priority
   [prioritized-nodes]
-  ;; {:post [(or (p prioritized-nodes) (p %) true)]}
-  (map first (sort-by second > prioritized-nodes)))
+  (stable-sort prioritized-nodes))
+
 
 (defn- assign-updown-priorities
   [context]
@@ -167,6 +181,10 @@
         upnodes (sort-by-priority (map (fn [n] [n (up-priority dummy-graph dummy-nodes n)]) allnodes))
         downnodes (sort-by-priority (map (fn [n] [n (down-priority dummy-graph dummy-nodes n)]) allnodes))
         ]
+    ;; (prn "upnodes")
+    ;; (pprint upnodes)
+    ;; (prn "downnodes")
+    ;; (pprint downnodes)
     (assoc context
       :upprioritized-nodes upnodes
       :downprioritized-nodes downnodes)))
@@ -315,6 +333,7 @@
 
 (defn- upward-iter2
   [context]
+  ;; (printf "upward-iter2\n")
   (let [{:keys [dummy-graph upprioritized-nodes layers]} context
         layer-to-node (:layer-to-node layers)
         node-to-layer (:node-to-layer layers)
@@ -365,7 +384,7 @@
   (let [{:keys [dummy-graph layers inlayer-spacing layer-spacing]} context
         layer-to-node (:layer-to-node layers)
         [dummy-graph _] (reduce (fn [[dummy-graph x] layer]
-                                  (let [nodes (layer-to-node layer)
+                                  (let [nodes (sort (layer-to-node layer)) ;; a bit more deterministic
                                         dummy-graph (place-node-inlayer dummy-graph nodes x inlayer-spacing)]
                                     [dummy-graph (+ x layer-spacing)]))
                                 [dummy-graph 0]
@@ -420,14 +439,15 @@
         context (assign-default-coordinates context)
         context (assign-updown-priorities context)
         context (-> context
-                    (downward-iter2)
-                    (downward-iter2)
-                    (downward-iter2)
-                    (downward-iter2)
-                    (upward-iter2)
-                    (upward-iter2)
-                    (downward-iter2)
-                    (downward-iter2))]
+                     (downward-iter2)
+                     (downward-iter2)
+                     (downward-iter2)
+                     (downward-iter2)
+                     (upward-iter2)
+                     (upward-iter2)
+                     (downward-iter2)
+                     (downward-iter2))
+        ]
     (-> context
         (update-in [:dummy-graph] make-graph-visible)
         (update-in [:dummy-graph] adjust-size))))
