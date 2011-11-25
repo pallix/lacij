@@ -46,8 +46,9 @@
 (defn- longest-path-layering
   [context]
   (let [graph (:graph context)
+        sorted (sort (nodes graph))
         topology (topological-seq (constantly true) #(in-children graph %)
-                                  (first (sort (nodes graph))) (sort (nodes graph)))
+                                  (first sorted) (sort sorted))
         layers (reduce (fn [layers n]
                          (update-layers graph n layers))
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
@@ -154,24 +155,13 @@
   [graph dummy-nodes n]
   (x-priority graph dummy-nodes n in-edges))
 
-(defn- stable-sort
+(defn- sort-by-priority
   [prioritized-nodes]
-  ;; {:pre [(do (prn "in =")
-  ;;            (pprint prioritized-nodes)
-  ;;            true)]
-  ;;  :post [(do (prn "out =")
-  ;;             (pprint %)
-  ;;             true)]}
   (let [p (group-by second prioritized-nodes)]
     (reduce (fn [res idx]
               (concat res (sort (map first (get p idx)))))
             []
             (sort-by identity > (keys p)))))
-
-(defn- sort-by-priority
-  [prioritized-nodes]
-  (stable-sort prioritized-nodes))
-
 
 (defn- assign-updown-priorities
   [context]
@@ -179,12 +169,7 @@
         layer-to-node (:layer-to-node layers)
         allnodes (nodes dummy-graph)
         upnodes (sort-by-priority (map (fn [n] [n (up-priority dummy-graph dummy-nodes n)]) allnodes))
-        downnodes (sort-by-priority (map (fn [n] [n (down-priority dummy-graph dummy-nodes n)]) allnodes))
-        ]
-    ;; (prn "upnodes")
-    ;; (pprint upnodes)
-    ;; (prn "downnodes")
-    ;; (pprint downnodes)
+        downnodes (sort-by-priority (map (fn [n] [n (down-priority dummy-graph dummy-nodes n)]) allnodes))]
     (assoc context
       :upprioritized-nodes upnodes
       :downprioritized-nodes downnodes)))
@@ -384,7 +369,7 @@
   (let [{:keys [dummy-graph layers inlayer-spacing layer-spacing]} context
         layer-to-node (:layer-to-node layers)
         [dummy-graph _] (reduce (fn [[dummy-graph x] layer]
-                                  (let [nodes (sort (layer-to-node layer)) ;; a bit more deterministic
+                                  (let [nodes (layer-to-node layer)
                                         dummy-graph (place-node-inlayer dummy-graph nodes x inlayer-spacing)]
                                     [dummy-graph (+ x layer-spacing)]))
                                 [dummy-graph 0]
@@ -560,3 +545,4 @@
 
 (defn hierarchicallayout []
   (HierarchicalLayout.))
+
