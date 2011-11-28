@@ -48,7 +48,7 @@
   (let [graph (:graph context)
         sorted (sort (nodes graph))
         topology (topological-seq (constantly true) #(in-children graph %)
-                                  (first sorted) (sort sorted))
+                                  (first sorted) sorted)
         layers (reduce (fn [layers n]
                          (update-layers graph n layers))
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
@@ -157,6 +157,7 @@
 
 (defn- sort-by-priority
   [prioritized-nodes]
+  ;; stable sort
   (let [p (group-by second prioritized-nodes)]
     (reduce (fn [res idx]
               (concat res (sort (map first (get p idx)))))
