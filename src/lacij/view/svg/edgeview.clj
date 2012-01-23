@@ -55,7 +55,7 @@
                    (apply-styles {:stroke "#000000" :stroke-width 1} style)
                    (apply-attrs attrs2)))
               texts)]
-     (dom/elements doc *svg-ns* xml)
+     (dom/elements doc svg-ns xml)
      ))
 
   (edge-location

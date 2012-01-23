@@ -5,7 +5,7 @@
   lacij.utils.core
   (:use clojure.pprint))
 
-(def *debug* true)
+(def debug false)
 
 (defn by-two
   [i]
@@ -13,7 +13,7 @@
 
 (defmacro p [x]
   (let [s (str x " = ")]
-    (when *debug*
+    (when debug
      `(do
         (prn ~s)
         (pprint ~x)

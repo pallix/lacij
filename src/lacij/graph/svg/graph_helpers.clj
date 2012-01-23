@@ -106,7 +106,7 @@
       (let [nodeview (node-view (node graph id))
             selectiondecorator (node-selection-decorator nodeview)
             xml (decorate selectiondecorator nodeview {})
-            el (dom/elements xmldoc *svg-ns* xml)]
+            el (dom/elements xmldoc svg-ns xml)]
         (dom/append-child docelement el)))
     graph
 ))

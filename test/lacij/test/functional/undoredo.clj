@@ -1,6 +1,5 @@
 (ns lacij.test.functional.undoredo
   (:use clojure.pprint
-        clojure.contrib.swing-utils
         lacij.graph.core
         lacij.graph.svg.graph
         analemma.xml
@@ -13,13 +12,25 @@
            (java.awt.event ActionListener)
            (java.awt Component BorderLayout FlowLayout)))
 
+;; copied from swing utils
+(defn add-action-listener
+  "Adds an ActionLister to component. When the action fires, f will be
+invoked with the event as its first argument followed by args.
+Returns the listener."
+  [component f & args]
+  (let [listener (proxy [ActionListener] []
+                   (actionPerformed [event] (apply f event args)))]
+    (.addActionListener component listener)
+    listener))
+
+
 (defn gen-graph
   []
   (-> (create-graph)
       (add-node :Heracles "Heracles" 10 30)
       (add-node :clickme "Click on me" 400 30)))
 
-(def *graph* (atom (gen-graph)))
+(def ^{:dynamic true} *graph* (atom (gen-graph)))
 
 (defn random-color
   []

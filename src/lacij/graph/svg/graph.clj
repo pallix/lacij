@@ -320,7 +320,7 @@
   (let [{:keys [width height viewBox]
          :or {viewBox nil}} options
         view (graphview)
-        xmldoc (dom/create-document (dom-implementation) *svg-ns* "svg" nil)
+        xmldoc (dom/create-document (dom-implementation) svg-ns "svg" nil)
         svgcanvas (jsvgcanvas)
         undomanager (UndoManager.)
         undosupport (UndoableEditSupport.)]

@@ -14,7 +14,7 @@
             [tikkba.utils.dom :as dom])
   (:import java.awt.Rectangle))
 
-(def *selection-decorator* (rectnodeselection))
+(def selection-decorator (rectnodeselection))
 
 (defrecord SvgRectNodeView
     [id
@@ -61,7 +61,7 @@
                       texts)]
       ;; (prn "xml =")
       ;; (pprint xml)
-      (dom/elements doc *svg-ns* xml)))
+      (dom/elements doc svg-ns xml)))
 
   (ports
    [this]
@@ -87,8 +87,7 @@
 
   (node-selection-decorator
    [this]
-   *selection-decorator*
-   )
+   selection-decorator)
 
   (contains-pt?
    [this x y]

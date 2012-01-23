@@ -1,13 +1,12 @@
 (ns lacij.test.functional.listener
   (:use clojure.pprint
-        clojure.contrib.swing-utils
         lacij.graph.core
         lacij.graph.svg.graph
         analemma.xml
         (tikkba swing dom core)
         tikkba.utils.xml
         (lacij.view.svg rectnodeview circlenodeview))
-  (:import (javax.swing JFrame JButton BoxLayout)
+  (:import (javax.swing JFrame JButton BoxLayout SwingUtilities)
            (java.awt.event ActionListener)
            java.awt.Component))
 
@@ -33,7 +32,7 @@
            (Integer/toHexString (rand-int 16)))]
     (apply format "#%s%s%s%s%s%s" (repeatedly 6 color))))
 
-(def *graph* (atom nil))
+(def ^{:dynamic true} *graph* (atom nil))
 
 (defn on-click-listener
   [event]
@@ -56,5 +55,5 @@
         frame (create-frame svgcanvas)
         g (add-listener g :clickme "click" on-click-listener)]
     (reset! *graph* g)
-    (do-swing-and-wait
-     (.setVisible frame true))))
+    (SwingUtilities/invokeAndWait
+     (fn [] (.setVisible frame true)))))

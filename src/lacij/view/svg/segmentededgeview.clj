@@ -93,7 +93,7 @@
               (s/group
                (draw-path x-src-port y-src-port x-dst-port y-dst-port points style attrs))
               texts)]
-     (dom/elements doc *svg-ns* xml)
+     (dom/elements doc svg-ns xml)
      ))
 
   (edge-location

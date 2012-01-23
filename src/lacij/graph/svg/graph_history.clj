@@ -4,6 +4,7 @@
 (ns ^{:doc "Functions for the implementation of undo/redo"}
   lacij.graph.svg.graph-history
   (:use clojure.pprint
+        clojure.set
         lacij.graph.svg.history
         tikkba.apps.svgbrowser)
   (:require [tikkba.utils.dom :as dom]))
@@ -14,12 +15,12 @@
 (defn graphstate
   [graph]
   ;; store all immutable fields
-  (let [keys-to-store (clojure.set/difference (set (keys graph))
-                                              #{:xmldoc
-                                                :svgcanvas
-                                                :undomanager
-                                                :undosupport
-                                                :history})
+  (let [keys-to-store (difference (set (keys graph))
+                                  #{:xmldoc
+                                    :svgcanvas
+                                    :undomanager
+                                    :undosupport
+                                    :history})
         state (GraphState. (select-keys graph keys-to-store))]
     state))
 

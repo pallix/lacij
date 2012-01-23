@@ -10,6 +10,14 @@ dynamic modification. Automatic layout is provided for the visualization.
 An online presentation of Lacij, dated from June 2011, can be found here:
 https://docs.google.com/present/view?id=dsjwfrk_1js9ptkcd
 
+## Installing
+
+The easiest way to use Lacij in your own projects is via
+[Leiningen](http://github.com/technomancy/leiningen). Add the following
+dependency to your project.clj file:
+
+    [lacij "0.6.0"]
+    
 ## Usage
 
 ### Example 1: creating a simple graph and exporting it as SVG.
@@ -79,7 +87,7 @@ Bug fixes and API improvements.
 
 ## License
 
-Copyright (C) 2010-2011 Fraunhofer Gesellschaft
+Copyright (C) 2010-2012 Fraunhofer Gesellschaft
 
 Distributed under the Eclipse Public License, the same as Clojure.
 

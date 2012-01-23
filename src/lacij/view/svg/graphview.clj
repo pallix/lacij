@@ -18,7 +18,7 @@
    [this graph context]
    (let [defs (s/defs (apply concat (:defs context)))
          {:keys [doc width height viewBox]} context
-         markers-def (dom/elements doc *svg-ns* defs)
+         markers-def (dom/elements doc svg-ns defs)
          node-elements (map (fn [nodeid]
                               (let [n (node graph nodeid)]
                                 (view-node (node-view n) n context)))
@@ -31,14 +31,14 @@
                               decorators (node-decorators view)
                               tags (map #(decorate % view {}) decorators)]
                           (when (seq tags)
-                            (map #(dom/elements doc *svg-ns* %) tags))))
+                            (map #(dom/elements doc svg-ns %) tags))))
                       (nodes graph)))
          edge-elements (map (fn [edgeid]
                               (let [e (edge graph edgeid)]
                                (view-edge (edge-view e) graph e context)))
                             (edges graph))
          doc-element (dom/document-element doc)
-         mastergroup-element (dom/elements doc *svg-ns* [:g {:id "graph0"}])]
+         mastergroup-element (dom/elements doc svg-ns [:g {:id "graph0"}])]
      (dom/add-attrs doc-element :overflow "visible")
      (when width
        (dom/add-attrs doc-element :width width))

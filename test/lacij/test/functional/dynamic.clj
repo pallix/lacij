@@ -1,15 +1,25 @@
 (ns lacij.test.functional.dynamic
   (:use clojure.pprint
-        clojure.contrib.swing-utils
         lacij.graph.core
         lacij.graph.svg.graph
         analemma.xml
         (tikkba swing dom core)
         tikkba.utils.xml
         (lacij.view.svg rectnodeview circlenodeview))
-  (:import (javax.swing JFrame JButton BoxLayout)
+  (:import (javax.swing JFrame JButton BoxLayout SwingUtilities)
            (java.awt.event ActionListener)
            java.awt.Component))
+
+;; copied from swing utils
+(defn add-action-listener
+  "Adds an ActionLister to component. When the action fires, f will be
+invoked with the event as its first argument followed by args.
+Returns the listener."
+  [component f & args]
+  (let [listener (proxy [ActionListener] []
+                   (actionPerformed [event] (apply f event args)))]
+    (.addActionListener component listener)
+    listener))
 
 (defn on-action [event svgcanvas g]
   (do-batik
@@ -52,6 +62,6 @@
         _ (export g "/tmp/dynamic1.svg")
         svgcanvas (canvas g)
         frame (create-frame svgcanvas g)]
-    (do-swing-and-wait
-     (.setVisible frame true))))
+    (SwingUtilities/invokeAndWait
+     (fn [] (.setVisible frame true)))))
 

@@ -65,7 +65,7 @@
                           (apply-styles default-style style)
                           (apply-attrs attrs)))
                      texts)]
-     (dom/elements doc *svg-ns* xml)))
+     (dom/elements doc svg-ns xml)))
 
   (ports
    [this]
