@@ -59,12 +59,14 @@
                                     :y radius
                                     :y-multi (by-two radius)
                                     :xmargin radius})
+         decorations (map #(decorate % this context) decorators)
          xml (concat (s/group
                       {:id (name id) :transform (format "translate(%s, %s)" x y)}
                       (-> [:circle {:r radius :cx radius :cy radius}]
                           (apply-styles default-style style)
                           (apply-attrs attrs)))
-                     texts)]
+                     texts
+                     decorations)]
      (dom/elements doc svg-ns xml)))
 
   (ports

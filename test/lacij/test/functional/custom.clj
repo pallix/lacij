@@ -21,13 +21,12 @@
 
   (decorate
     [this view context]
-    (let [[centerx centery] (node-center view)
-          width (node-width view)
+    (let [width (node-width view)
           height (node-height view)]
-      (-> (svg/path [:M [centerx (double (- centery (/ height 2)))]
-                     :L [centerx (double (+ centery (/ height 2)))]
-                     :M [(double (- centerx (/ width 2))) centery]
-                     :L [(double (+ centerx (/ width 2))) centery]
+      (-> (svg/path [:M [(double (/ width 2)) 0]
+                     :L [(double (/ width 2)) height]
+                     :M [0 (double (/ height 2))]
+                     :L [width (double (/ height 2))]
                      :Z []])
           (svg/style :stroke-width 3 :stroke "black")))))
 

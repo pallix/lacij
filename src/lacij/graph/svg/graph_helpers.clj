@@ -108,8 +108,7 @@
             xml (decorate selectiondecorator nodeview {})
             el (dom/elements xmldoc svg-ns xml)]
         (dom/append-child docelement el)))
-    graph
-))
+    graph))
 
 (defn remove-edge-by-id
   [this id]

@@ -44,21 +44,21 @@
 
   (view-node
    [this node context]
-    (let [{:keys [doc tmpdecorators]} context
+    (let [{:keys [doc]} context
           [x-center y-center] (node-center this)
           texts (view-labels labels {:x (by-two width)
                                      :y (by-two height)
                                      :xmargin 5
                                      :text-anchor "middle"
                                      :text-anchor-multi "start"})
-          ;; all decorators should be handled by the graphview?
-          ;; decorations (map #(decorate % this context) tmpdecorators)
+          decorations (map #(decorate % this context) decorators)
           xml (concat (s/group
                        {:id (name id) :transform (format "translate(%s, %s)" x y)}
                        (-> [:rect {:height height :width width}]
                            (apply-styles default-style style)
                            (apply-attrs attrs)))
-                      texts)]
+                      texts
+                      decorations)]
       ;; (prn "xml =")
       ;; (pprint xml)
       (dom/elements doc svg-ns xml)))

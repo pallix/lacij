@@ -295,13 +295,13 @@
      (swap! history update-current-state (graphstate graph))
      graph))
 
-    (width
-     [this]
-     width)
+  (width
+   [this]
+   width)
     
-    (height
-     [this]
-     height))
+  (height
+   [this]
+   height))
 
 (def end-arrow-marker
   [:lacij-end-arrow-marker

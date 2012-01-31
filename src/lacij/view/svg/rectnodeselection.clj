@@ -19,9 +19,7 @@
          (s/style :fill-opacity 0.0
                   :stroke :darkviolet
                   :stroke-width bordersize
-                  :stroke-dasharray "4, 4"))))
-
-  )
+                  :stroke-dasharray "4, 4")))))
 
 (defn rectnodeselection
   []

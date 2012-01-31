@@ -23,16 +23,6 @@
                               (let [n (node graph nodeid)]
                                 (view-node (node-view n) n context)))
                             (nodes graph))
-         decorators-elements
-         (apply concat
-                (keep (fn [nodeid]
-                        (let [n (node graph nodeid)
-                              view (node-view n)
-                              decorators (node-decorators view)
-                              tags (map #(decorate % view {}) decorators)]
-                          (when (seq tags)
-                            (map #(dom/elements doc svg-ns %) tags))))
-                      (nodes graph)))
          edge-elements (map (fn [edgeid]
                               (let [e (edge graph edgeid)]
                                (view-edge (edge-view e) graph e context)))
@@ -50,7 +40,6 @@
      (dom/append-child doc-element mastergroup-element)
      (dom/append-children mastergroup-element edge-elements)
      (dom/append-children mastergroup-element node-elements)
-     (dom/append-children mastergroup-element decorators-elements)
      doc))
 
   (export-graph
