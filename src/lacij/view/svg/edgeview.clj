@@ -14,7 +14,7 @@
             [tikkba.utils.dom :as dom]))
 
 (defrecord SvgEdgeView
-    [labels style attrs]
+    [id labels style attrs]
   EdgeView
 
   (add-edge-label
@@ -41,7 +41,7 @@
                     labels)
          attrs2 (dissoc attrs :marker-end)
          xml (concat
-              (s/group
+              (s/group {:id (name id)}
                (-> (cond (= ::not-found (get attrs :marker-end ::not-found))
                          (s/line x-src-port y-src-port x-dst-port y-dst-port
                              :marker-end "url(#lacij-end-arrow-marker)")
@@ -90,7 +90,7 @@
          (concat (:src-port shortest-dist) (:dst-port shortest-dist)))))))
 
 (defn svgedgeview
-  ([]
-     (SvgEdgeView. [] {} {}))
-  ([style attrs]
-     (SvgEdgeView. [] style attrs)))
+  ([id]
+     (SvgEdgeView. id [] {} {}))
+  ([id style attrs]
+     (SvgEdgeView. id [] style attrs)))

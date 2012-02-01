@@ -40,7 +40,7 @@
   [id params id-node-src id-node-dst edge-styles edge-attrs]
   (let [{:keys [label style]} params
         rest-params (dissoc params :label :style)
-        edgeview (svgedgeview (merge edge-styles style) (merge edge-attrs rest-params))
+        edgeview (svgedgeview id (merge edge-styles style) (merge edge-attrs rest-params))
         edgeview (if (nil? label)
                    edgeview
                    (add-edge-label edgeview (edgelabelview label :center)))

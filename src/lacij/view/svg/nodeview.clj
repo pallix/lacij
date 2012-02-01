@@ -1,7 +1,7 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2012 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
-(ns ^{:doc "Factory to create different types of nodes"}
+(ns ^{:doc "Default factory to create different types of nodes views"}
   lacij.view.svg.nodeview
   (:use lacij.utils.core
         lacij.view.svg.utils.style
