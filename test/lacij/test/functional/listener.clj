@@ -13,7 +13,7 @@
 (defn gen-graph
   []
   (-> (create-graph)
-      (add-node :clickme "Click on me" 10 30)
+      (add-node :clickme "Click on me" :x 10 :y 30)
       (build)))
 
 (defn create-frame
@@ -43,10 +43,9 @@
      svgcanvas
      (reset! *graph*
              (-> g
-                 (add-node! nodeid "Appolon" (rand-int 600) (rand-int 600))
+                 (add-node! nodeid "Appolon" :x (rand-int 600) :y (rand-int 600))
                  (add-node-styles! :clickme :fill (random-color))
-                 (add-edge! (gensym "appolon-clickme") nodeid :clickme)))
-     )))
+                 (add-edge! (gensym "appolon-clickme") nodeid :clickme))))))
 
 (defn -main []
   (let [g (gen-graph)

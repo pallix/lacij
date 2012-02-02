@@ -70,7 +70,7 @@
                  [:x :r] [:x1 :x] [:x2 :x] [:x3 :x] [:x4 :x] [:x5 :x])))
 
 (defn -main []
-  (let [g (-> (gen-graph3)
+  (let [g (-> (gen-graph2)
               (layout :radial :radius 90)
               (build))]
     (export g "/tmp/radial.svg" :indent "yes")))

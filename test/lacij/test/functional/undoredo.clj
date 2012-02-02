@@ -27,8 +27,8 @@ Returns the listener."
 (defn gen-graph
   []
   (-> (create-graph)
-      (add-node :Heracles "Heracles" 10 30)
-      (add-node :clickme "Click on me" 400 30)))
+      (add-node :Heracles "Heracles" :x 10 :y 30)
+      (add-node :clickme "Click on me" :x 400 :y 30)))
 
 (def ^{:dynamic true} *graph* (atom (gen-graph)))
 
@@ -47,7 +47,7 @@ Returns the listener."
     (do-batik-update
       g
       (let [g (add-node-styles! g :Heracles :fill (random-color))
-            g (add-node! g nodeid "Appolon" (rand-int 600) (rand-int 600))
+            g (add-node! g nodeid "Appolon" :x (rand-int 600) :y (rand-int 600))
             g (add-edge! g (keyword (gensym "edge")) nodeid :Heracles)
             g (set-node-selected! g nodeid true)]
         (reset! *graph* g)))))

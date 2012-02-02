@@ -22,9 +22,9 @@
 (defn -main []
   (-> (create-graph)
       (add-def dotl-marker)
-      (add-node :hermes "Hermes" 10 30)
-      (add-node :zeus "Zeus" 250 150)
-      (add-node :ares "Ares" 250 250)
+      (add-node :hermes "Hermes" :x 10 :y 30)
+      (add-node :zeus "Zeus" :x 250 :y 150)
+      (add-node :ares "Ares" :x 250 :y 250)
       (add-edge :father1 :hermes :zeus :marker-end "url(#dotl)")
       (add-edge :father2 :ares :zeus)
       (build)

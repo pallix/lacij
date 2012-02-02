@@ -66,14 +66,13 @@
    (f this id {})
 
    (keyword? (first params)) 
-   (f this id (apply hash-map params))
+   (f this id (merge {:label (name id) :x 0 :y 0}
+                     (apply hash-map params)))
 
    :else
-   (let [[label x y & res] params
-         x (or x 0)
-         y (or y 0)]
-     (f this id (merge {:label label :x x :y y}
-                                 (apply hash-map res))))))
+   (let [[label & res] params]
+     (f this id (merge {:label label :x 0 :y 0}
+                       (apply hash-map res))))))
 
 (defn add-node
   [this id & params]
@@ -95,8 +94,7 @@
    :else
    (let [[label & res] params]
      (f this id src-id dst-id (merge {:label label}
-                                     (apply hash-map res))))
-   ))
+                                     (apply hash-map res))))))
 
 (defn add-edge
   [this id src-id dst-id & params]
