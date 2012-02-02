@@ -1,7 +1,7 @@
 # Lacij
 
 Lacij is a graph visualization library written in Clojure. It allows the **display
-and the dynamic modification* of graphs as SVG documents** that can be viewed
+and the dynamic modification of graphs as SVG documents** that can be viewed
 with a **Web browser** or with a **Swing component**. Undo/redo is supported for the
 dynamic modification. Automatic layout is provided for the visualization.
 
