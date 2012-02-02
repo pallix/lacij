@@ -78,30 +78,3 @@
    a linear search."
   [col x]
   (second (first (filter #(= (first %) x) (partition 2 (interleave col (iterate inc 0)))))))
-
-;; from the joy of clojure book:
-
-(defn contextual-eval [ctx expr]
-  (eval
-   `(let [~@(mapcat (fn [[k v]] [k `'~v]) ctx)]
-      ~expr)))
-
-
-(defn readr [prompt exit-code]
-  (let [input (clojure.main/repl-read prompt exit-code)]
-    (if (= input ::tl) 
-      exit-code
-      input)))
-
-
-(defmacro local-context []
-  (let [symbols (keys &env)]
-    (zipmap (map (fn [sym] `(quote ~sym)) symbols) symbols)))
-
-
-(defmacro break []
-  `(clojure.main/repl
-    :prompt #(print "debug=> ")
-    :read readr
-    :eval (partial contextual-eval (local-context))))
-
