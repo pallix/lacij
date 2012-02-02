@@ -218,23 +218,23 @@
 
 (defn- placeddowner-node
   [d placed]
-  (first (filter #(contains? placed %) d)))
+     (first (filter #(contains? placed %) d)))
 
 (defn- upper-y
-  [dummy-graph upper-node inlayer-spacing]
+  [dummy-graph upper-node inlayer-space]
   (if (nil? upper-node)
     0
     (let [view (node-view (node dummy-graph upper-node))
           y (node-y view)
           h (node-height view)]
-      (+ y h inlayer-spacing))))
+      (+ y h inlayer-space))))
 
 (defn- downer-y
-  [dummy-graph down-node inlayer-spacing]
+  [dummy-graph down-node inlayer-space]
   (if (nil? down-node)
     (/ Integer/MAX_VALUE 2)
     (let [y (node-y (node-view (node dummy-graph down-node)))]
-      (- y inlayer-spacing))))
+      (- y inlayer-space))))
 
 (defn- nodes-between
   [upper-node n nodes]
@@ -258,30 +258,30 @@
            nodes)))
 
 (defn- calc-space-for-nodes
-  [dummy-graph nodes inlayer-spacing]
+  [dummy-graph nodes inlayer-space]
   (reduce (fn [space n]
             (let [h (node-height (node-view (node dummy-graph n)))]
-              (+ space h inlayer-spacing)))
+              (+ space h inlayer-space)))
           0
           nodes))
 
 (defn- calc-upy
-  [dummy-graph n nodes placed upperdowner inlayer-spacing]
+  [dummy-graph n nodes placed upperdowner inlayer-space]
   (let [[u d] upperdowner
         upper-node (placedupper-node u placed)
-        upy (upper-y dummy-graph upper-node inlayer-spacing)
+        upy (upper-y dummy-graph upper-node inlayer-space)
         nodesbetween (nodes-between upper-node n nodes)
-        space (calc-space-for-nodes dummy-graph nodesbetween inlayer-spacing)
+        space (calc-space-for-nodes dummy-graph nodesbetween inlayer-space)
         y (+ upy space)]
     y))
 
 (defn- calc-downy
-  [dummy-graph n nodes placed upperdowner inlayer-spacing]
+  [dummy-graph n nodes placed upperdowner inlayer-space]
   (let [[_ d] upperdowner
         downernode (placeddowner-node d placed)
-        downy (downer-y dummy-graph downernode inlayer-spacing)
+        downy (downer-y dummy-graph downernode inlayer-space)
         nodesbetween (nodes-between n downernode nodes)
-        space (calc-space-for-nodes dummy-graph nodesbetween inlayer-spacing)
+        space (calc-space-for-nodes dummy-graph nodesbetween inlayer-space)
         y (- downy space)]
     y))
 
@@ -302,18 +302,18 @@
           (move-node-center dummy-graph n xcenter med))))
 
 (defn- move-node-inlayer
-  [dummy-graph n nodesinlayer med placed inlayer-spacing]
+  [dummy-graph n nodesinlayer med placed inlayer-space]
   (let [upperdowner (upperdowner-nodes dummy-graph n nodesinlayer placed)
-        upy (calc-upy dummy-graph n nodesinlayer placed upperdowner inlayer-spacing)
-        downy (calc-downy dummy-graph n nodesinlayer placed upperdowner inlayer-spacing)]
+        upy (calc-upy dummy-graph n nodesinlayer placed upperdowner inlayer-space)
+        downy (calc-downy dummy-graph n nodesinlayer placed upperdowner inlayer-space)]
     (if (nil? med)
       dummy-graph
       (pack-node n dummy-graph upy downy med))))
 
 (defn- assign-node-coordinates
-  [dummy-graph n nodesinlayer placed inlayer-spacing x-median]
+  [dummy-graph n nodesinlayer placed inlayer-space x-median]
   (let [med (x-median dummy-graph n)
-        dummy-graph (move-node-inlayer dummy-graph n nodesinlayer med placed inlayer-spacing)
+        dummy-graph (move-node-inlayer dummy-graph n nodesinlayer med placed inlayer-space)
         placed (conj placed n)]
     [dummy-graph placed]))
 
@@ -330,7 +330,7 @@
                                         n
                                         (layer-to-node layer)
                                         placed
-                                        (:inlayer-spacing context)
+                                        (:inlayer-space context)
                                         up-median)))
                                    [dummy-graph #{}]
                                    upprioritized-nodes))]
@@ -348,37 +348,39 @@
                                         n
                                         (layer-to-node layer)
                                         placed
-                                        (:inlayer-spacing context)
+                                        (:inlayer-space context)
                                         down-median)))
                                    [dummy-graph #{}]
                                    downprioritized-nodes))]
     (assoc context :dummy-graph dummy-graph)))
 
 (defn- place-node-inlayer
-  [dummy-graph nodes x inlayer-spacing]
+  [dummy-graph nodes x inlayer-space]
   (first
    (reduce (fn [[dummy-graph y] n]
              (let [h (int (/ (node-height (node-view (node dummy-graph n))) 2))
                    y (+ y h)
                    dummy-graph (move-node-center dummy-graph n x y)]
-               [dummy-graph (+ y h inlayer-spacing)]))
+               [dummy-graph (+ y h inlayer-space)]))
            [dummy-graph 0]
            nodes)))
 
 (defn- assign-default-coordinates
   [context]
-  (let [{:keys [dummy-graph layers inlayer-spacing layer-spacing]} context
+  (let [{:keys [dummy-graph layers inlayer-space layer-space]} context
         layer-to-node (:layer-to-node layers)
         [dummy-graph _] (reduce (fn [[dummy-graph x] layer]
                                   (let [nodes (layer-to-node layer)
-                                        dummy-graph (place-node-inlayer dummy-graph nodes x inlayer-spacing)]
-                                    [dummy-graph (+ x layer-spacing)]))
-                                [dummy-graph 0]
+                                        width (widest-value dummy-graph nodes)
+                                        x (+ x (by-two width))
+                                        dummy-graph (place-node-inlayer dummy-graph nodes x inlayer-space)]
+                                    [dummy-graph (+ x (by-two width) layer-space)]))
+                                [dummy-graph (- (by-two(widest-value dummy-graph (layer-to-node 0))))]
                                 (range (count layer-to-node)))]
     (assoc context :dummy-graph dummy-graph)))
 
 (defn- minnode-helper
-  [dummy-graph placed queue inqueue node-to-layer layer-to-node inlayer-spacing step]
+  [dummy-graph placed queue inqueue node-to-layer layer-to-node inlayer-space step]
   (let [[x & xs] queue]
     (if (or (nil? x) (neg? step))
       dummy-graph
@@ -389,7 +391,7 @@
         (if (not= (int current) med)
           (let [layer (node-to-layer x)
                 nodesinlayer (layer-to-node layer)
-                dummy-graph (move-node-inlayer dummy-graph x nodesinlayer med placed inlayer-spacing)
+                dummy-graph (move-node-inlayer dummy-graph x nodesinlayer med placed inlayer-space)
                 children (concat (in-children dummy-graph x) (out-children dummy-graph x) )
                 childrennotinqueue (clojure.set/difference (set children) inqueue)]
             (recur dummy-graph
@@ -398,9 +400,9 @@
                    (into (disj inqueue x) childrennotinqueue)
                    node-to-layer
                    layer-to-node
-                   inlayer-spacing
+                   inlayer-space
                    (dec step)))
-          (recur dummy-graph (conj placed x) xs (disj inqueue x) node-to-layer layer-to-node inlayer-spacing
+          (recur dummy-graph (conj placed x) xs (disj inqueue x) node-to-layer layer-to-node inlayer-space
                  (dec step)))))))
 
 (defn- minnode
@@ -409,10 +411,10 @@
         node-to-layer (:node-to-layer layers)
         layer-to-node (:layer-to-node layers)
         dummy-graph (:dummy-graph context)
-        inlayer-spacing (:inlayer-spacing context)]
+        inlayer-space (:inlayer-space context)]
     (assoc context :dummy-graph
            (minnode-helper dummy-graph #{} (vec (nodes dummy-graph)) (set (nodes dummy-graph))
-                           node-to-layer layer-to-node inlayer-spacing 3000))))
+                           node-to-layer layer-to-node inlayer-space 3000))))
 
 (defn- assign-coordinates
   [context]
@@ -524,6 +526,7 @@
   Layout
   
   (layout-graph
+    ;; Available options are :layer-space and :inlayer-space
    [this graph options]
     (let [steps {:layering longest-path-layering
                  :dummy-nodes add-dummy-nodes
@@ -531,7 +534,8 @@
                  :bendsangles-reduction identity
                  :coordinates-assignment assign-coordinates
                  :cleanup cleanup}
-          context {:graph graph :dummy-graph graph :inlayer-spacing 20 :layer-spacing 300}
+          context (merge {:graph graph :dummy-graph graph :inlayer-space 20 :layer-space 150}
+                         options)
           ;; calls each step of the layout:
           context (->> context
                        ((:layering steps))

@@ -46,9 +46,9 @@
               (nodes graph)))))
 
 (defn best-node
-  [graph val cmp]
+  [graph valfn cmp]
   (reduce (fn [maxid id]
-            (if (cmp (val id) (val maxid))
+            (if (cmp (valfn id) (valfn maxid))
               id
               maxid))
           (nodes graph)))
@@ -89,3 +89,12 @@
         spacing 10]
     (assoc graph :width (round-up xright) :height (round-up ylow))))
 
+(defn widest-node
+  "Returns the node id of the widest node in the collection. "
+  [graph nodes]
+  (first (sort-by (fn [id] (node-width (node-view (node graph id)))) > nodes)))
+
+(defn widest-value
+  "Returns the width of the widest node in the collection. "
+  [graph nodes]
+  (node-width (node-view (node graph (widest-node graph nodes)))))
