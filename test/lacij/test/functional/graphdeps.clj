@@ -60,7 +60,7 @@
 (defn link-ns-to-deps
   [map ns ns-which-used-it]
   (reduce (fn [map n]
-            ;; (printf "linking %s to %s\n" n ns)
+            (printf "%s -> %s;\n" n ns)
             (add-edge map (geneid) (keyword ns) (keyword n)))
           map
           ns-which-used-it))

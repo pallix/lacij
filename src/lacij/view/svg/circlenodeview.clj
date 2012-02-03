@@ -8,7 +8,7 @@
         lacij.view.core
         lacij.view.svg.utils.style
         tikkba.dom
-        [lacij.view.svg.utils style text])
+        [lacij.view.svg.utils text])
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]
             [tikkba.utils.dom :as dom])
