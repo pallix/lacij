@@ -1,4 +1,4 @@
-(ns lacij.test.functional.undoredo
+(ns lacij.examples.undoredo
   (:use clojure.pprint
         lacij.graph.core
         lacij.graph.svg.graph

@@ -16,7 +16,7 @@ The easiest way to use Lacij in your own projects is via
 [Leiningen](http://github.com/technomancy/leiningen). Add the following
 dependency to your project.clj file:
 
-    [lacij "0.7.0-SNAPSHOT"]
+    [lacij "0.7.1"]
     
     
 ## Usage
@@ -73,7 +73,15 @@ Naive Layout (a simple layout used to test the library):
 
 ## Learning by doing
 
-All the full examples and other examples can be found in the test directory.
+__All examples are available in the__ [examples directory](https://github.com/pallix/lacij/tree/master/src/lacij/examples/).
+
+You can run the examples with the following command:
+
+    lein run -m <namespace-of-the-example>
+
+For example:
+
+    lein run -m lacij.examples.undoredo
 
 ## Contribution
 

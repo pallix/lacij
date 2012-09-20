@@ -1,4 +1,4 @@
-(ns lacij.test.functional.graphdeps
+(ns lacij.examples.graphdeps
   (:use clojure.pprint
         lacij.graph.core
         lacij.graph.svg.graph

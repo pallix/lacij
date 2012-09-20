@@ -1,4 +1,4 @@
-(ns lacij.test.functional.hierarchicallayout
+(ns lacij.examples.hierarchicallayout
   (:use clojure.pprint
         lacij.layouts.layout
         lacij.graph.core

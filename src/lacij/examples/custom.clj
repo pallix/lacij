@@ -1,4 +1,4 @@
-(ns lacij.test.functional.custom 
+(ns lacij.examples.custom 
   (:use clojure.pprint
         lacij.graph.core
         lacij.graph.svg.graph
@@ -8,7 +8,7 @@
   (:require [analemma.svg :as svg]))
 
 (defn create-node-view []
-  (let [xmlcontent (parse-xml (slurp "test/lacij/test/functional/blue-rect.svg"))
+  (let [xmlcontent (parse-xml (slurp "src/lacij/examples/blue-rect.svg"))
         rect (import-rect xmlcontent :blueRectangle0 :blueRectangle0 0 0)]
     (fn [shape x y style attrs]
       (condp = shape
@@ -31,7 +31,7 @@
           (svg/style :stroke-width 3 :stroke "black")))))
 
 (defn -main []
-  (let [xmlcircle (parse-xml (slurp "test/lacij/test/functional/green-circle.svg"))]
+  (let [xmlcircle (parse-xml (slurp "src/lacij/examples/green-circle.svg"))]
    (-> (create-graph)
        (set-node-view-factory (create-node-view))
        (add-node :athena "Athena" :x 10 :y 30)

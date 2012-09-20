@@ -1,4 +1,4 @@
-(ns lacij.test.functional.radiallayout
+(ns lacij.examples.radiallayout
   (:use clojure.pprint
         lacij.graph.core
         lacij.graph.svg.graph

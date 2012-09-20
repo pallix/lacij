@@ -1,4 +1,4 @@
-(ns lacij.test.functional.textwrapping
+(ns lacij.examples.textwrapping
   (:use clojure.pprint
         lacij.graph.core
         lacij.graph.svg.graph))

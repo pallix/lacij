@@ -1,6 +1,5 @@
-(defproject lacij "0.7.0-SNAPSHOT"
-  :description "Lacij is a graph visualization library for Clojure
-                with automatic layouts, edition and undo/redo support."
-  :dependencies [[org.clojure/clojure "[1.2.0,1.3.0]"]
-                 [tikkba "0.3.0"]])
-
+(defproject lacij/lacij "0.7.1" 
+  :min-lein-version "2.0.0"
+  :dependencies [[org.clojure/clojure "[1.2.0,]"]
+                 [tikkba "0.4.0"]]
+  :description "Lacij is a graph visualization library for Clojure\nwith automatic layouts, edition and undo/redo support.")

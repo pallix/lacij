@@ -1,4 +1,4 @@
-(ns lacij.test.functional.radiallayout2
+(ns lacij.examples.radiallayout2
   (:use clojure.pprint
         lacij.layouts.layout
         lacij.graph.core
