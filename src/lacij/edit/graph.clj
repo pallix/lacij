@@ -86,18 +86,6 @@
        graph (update-node-edges graph id id-node-src id-node-dst)]
    (update-in graph [:edges] assoc id edge)))
 
-
-(defmacro do-batik-update
-  "Executes body inside a batik thread and insides an update"
-  [graph & body]
-  `(let [graph# ~graph
-         svgcanvas# (canvas graph#)]
-     (do-batik
-      svgcanvas#
-      (do-update
-        graph#
-        ~@body))))
-
 (defn- x-add-node
   [f this id & params]
   (cond
@@ -395,6 +383,17 @@
 ;;    (swap! history update-current-state (graphstate graph))
 ;;    graph))
 
+
+(defmacro do-batik-update
+  "Executes body inside a batik thread and insides an update"
+  [graph & body]
+  `(let [graph# ~graph
+         svgcanvas# (canvas graph#)]
+     (do-batik
+      svgcanvas#
+      (do-update
+        graph#
+        ~@body))))
 
 (def ^{:doc "Generates a unique id for an edge."} geneid (partial (comp keyword gensym) "e"))
 
