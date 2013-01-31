@@ -6,7 +6,6 @@
   (:use clojure.pprint
         tikkba.dom
         lacij.geom.distance
-        lacij.model.core
         lacij.view.core
         lacij.view.utils.style)
   (:require [analemma.svg :as s]
@@ -76,9 +75,9 @@
    (let [{:keys [doc]} context
          [x-src-port y-src-port x-dst-port y-dst-port] (edge-location this graph edge)
          texts (map (fn [label]
-                      (let [text (edgelabel-text label)
-                            position (edgelabel-position label)
-                            style (edgelabel-style label)]
+                      (let [text (:text label)
+                            position (:position label)
+                            style (:style label)]
                         (-> (s/text  {:x (double (/ (+ x-src-port x-dst-port) 2))
                                       :y (double (/ (+ y-src-port y-dst-port) 2))
                                       :text-anchor "middle"}
@@ -94,12 +93,12 @@
 
   (edge-location
    [this graph edge]
-   (let [src-view (node-view (node graph (src edge)))
+   (let [src-view (:view ((:nodes graph) (:src edge)))
          src-ports (ports src-view)
-         dst-view (node-view (node graph (dst edge)))
+         dst-view (:view ((:nodes graph) (:dst edge)))
          dst-ports (ports dst-view)
-         [x1-line y1-line] (node-center src-view)
-         [x2-line y2-line] (node-center dst-view)
+         [x1-line y1-line] (:center src-view)
+         [x2-line y2-line] (:center dst-view)
          shortest-dist (first
                         (sort-by
                          :dist
@@ -113,6 +112,6 @@
                             :dst-port y})))]
      (concat (:src-port shortest-dist) (:dst-port shortest-dist)))))
 
-(defn svgsegmentededgeview
+(defn create-segmented-edgeview
   ([style attrs points]
-     (SvgSegmentedEdgeView. [] style attrs points)))
+     (SegmentedEdgeView. [] style attrs points)))

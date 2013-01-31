@@ -56,6 +56,8 @@
            src-ports (ports src-view)
            dst-view (:view ((:nodes graph) (:dst edge)))
            dst-ports (ports dst-view)
+           _ (prn "src-ports=" src-ports)
+           _ (prn "dst-ports=" dst-ports)
            [x1 y1] (:center src-view)
            [x2 y2] (:center dst-view)
            dists
@@ -74,6 +76,8 @@
          ;; if several edges have the same length, we take the one
          ;; that is closest to the center of the dst node
          (let [disttocenter (fn [dist]
+                              (prn "dist=" dist)
+                              (prn "x y=" x2 y2)
                               (distance (first (:dst-port dist))
                                         (second (:dst-port dist))
                                         x2
@@ -82,7 +86,7 @@
            (concat (:src-port shortest-dist) (:dst-port shortest-dist)))))))
 
 
-(defn create-straightedgeview
+(defn create-straight-edgeview
   ([id]
      (StraightEdgeView. id [] {} {}))
   ([id style attrs]

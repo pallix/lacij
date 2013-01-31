@@ -5,7 +5,7 @@
   lacij.model.edge)
 
 (defrecord Edge
-    [id view srcid dstid])
+    [id view src dst])
 
 (defn create-edge
   [id view id-node-src id-node-dst]

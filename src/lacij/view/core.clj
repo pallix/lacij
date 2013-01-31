@@ -5,8 +5,6 @@
   lacij.view.core)
 
 (defprotocol NodeView
-  (add-node-label [this label])
-  (node-labels [this])
   (view-node [this node context])
   (ports [this] "Returns the ports. Ports are points where the edges connections occurs.")
   (contains-pt? [this x y])

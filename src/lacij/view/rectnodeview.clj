@@ -16,15 +16,11 @@
 
 (def selection-decorator (rectnodeselection))
 
-;; TODO calculates  (node-center
-   ;; [this]
-   ;; [(double (+ x (by-two width)))
-   ;;  (double (+ y (by-two height)))])
-
 (defrecord RectNodeView
     [id
      x
      y
+     center
      width
      height
      labels
@@ -33,10 +29,6 @@
      attrs
      decorators]
   NodeView
-
-  (add-node-label
-   [this label]
-   (update-in this [:labels] conj label))
 
   (view-node
    [this node context]
@@ -74,6 +66,15 @@
    (let [margin 5]
      [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))])))
 
+(defn center
+  [x y width height]
+  [(double (+ x (by-two width)))
+   (double (+ y (by-two height)))])
+
+(defn create-rectnodeview
+  [id x y width height labels default-style style attrs decorators]
+  (RectNodeView. id x y (center x y width height) 
+                 width height [] default-style style attrs #{}))
 
 (defn import-rect
   [xmlcontent infile-id id x y]
@@ -84,4 +85,5 @@
         height (Double/parseDouble height)
         attrs (dissoc attrs :width :height :style :x :y :id)
         style (s/parse-inline-css style)]
-    (RectNodeView. id x y width height [] {} style attrs #{})))
+    (RectNodeView. id x y (center x y width height)
+                   width height [] {} style attrs #{})))

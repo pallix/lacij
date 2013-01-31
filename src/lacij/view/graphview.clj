@@ -14,6 +14,8 @@
  (let [defs (s/defs (apply concat (:defs context)))
        {:keys [doc width height viewBox]} context
        markers-def (dom/elements doc svg-ns defs)
+       _ (prn "graph =")
+       _ (pprint graph)
        node-elements (map (fn [node]
                             (view-node (:view node) node context))
                           (vals (:nodes graph)))
@@ -35,6 +37,6 @@
    (dom/append-children mastergroup-element node-elements)
    doc))
 
-(defn export-graph
- [graph graph filename context options]
- (apply dom/spit-xml filename (:xmldoc graph) (flatten (seq options))))
+(defn export
+ [graph filename & options]
+ (apply dom/spit-xml filename (:xmldoc graph) options))
