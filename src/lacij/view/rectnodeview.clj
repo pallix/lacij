@@ -2,13 +2,13 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Implementation of the NodeView protocol for rectanguler nodes"}
-  lacij.view.svg.rectnodeview
+  lacij.view.rectnodeview
   (:use clojure.pprint
         lacij.utils.core
         lacij.view.core
-        lacij.view.svg.rectnodeselection
+        lacij.view.rectnodeselection
         tikkba.dom
-        [lacij.view.svg.utils style text])
+        [lacij.view.utils style text])
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]
             [tikkba.utils.dom :as dom])
@@ -16,7 +16,12 @@
 
 (def selection-decorator (rectnodeselection))
 
-(defrecord SvgRectNodeView
+;; TODO calculates  (node-center
+   ;; [this]
+   ;; [(double (+ x (by-two width)))
+   ;;  (double (+ y (by-two height)))])
+
+(defrecord RectNodeView
     [id
      x
      y
@@ -29,23 +34,14 @@
      decorators]
   NodeView
 
-  (node-center
-   [this]
-   [(double (+ x (by-two width)))
-    (double (+ y (by-two height)))])
-
   (add-node-label
    [this label]
    (update-in this [:labels] conj label))
 
-  (node-labels
-   [this]
-   labels)
-
   (view-node
    [this node context]
     (let [{:keys [doc]} context
-          [x-center y-center] (node-center this)
+          [x-center y-center] (:center this)
           texts (view-labels labels {:x (by-two width)
                                      :y (by-two height)
                                      :xmargin 5
@@ -68,27 +64,7 @@
    [[x y] [(double (+ x (by-two width))) y] [(+ x width) y]
     [x (double (+ y (by-two height)))] [(+ x width) (double (+ y (by-two height)))]
     [x (+ y height)] [(double (+ x (by-two width))) (+ y height)] [(+ x width) (+ y height)]])
-
-  (add-node-styles-kv
-   [this styles]
-   (update-in this [:style] merge styles))
-
-  (add-node-decorator
-   [this decorator]
-   (update-in this [:decorators] conj decorator))
-
-  (remove-node-decorator
-   [this decorator]
-   (update-in this [:decorators] disj decorator))
-
-  (node-decorators
-    [this]
-    decorators)
-
-  (node-selection-decorator
-   [this]
-   selection-decorator)
-
+  
   (contains-pt?
    [this x y]
    (.contains (Rectangle. (:x this) (:y this) width height) x y))
@@ -96,24 +72,7 @@
   (bounding-box
    [this]
    (let [margin 5]
-     [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))]))
-
-  (node-width
-   [this]
-   width)
-
-  (node-height
-   [this]
-   height)
-
-  (node-x
-   [this]
-   x)
-
-  (node-y
-   [this]
-   y)
-)
+     [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))])))
 
 
 (defn import-rect
@@ -125,4 +84,4 @@
         height (Double/parseDouble height)
         attrs (dissoc attrs :width :height :style :x :y :id)
         style (s/parse-inline-css style)]
-    (SvgRectNodeView. id x y width height [] {} style attrs #{})))
+    (RectNodeView. id x y width height [] {} style attrs #{})))

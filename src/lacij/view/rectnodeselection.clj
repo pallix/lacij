@@ -2,7 +2,7 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Decorator for marking rectangular nodes as selected"}
-  lacij.view.svg.rectnodeselection
+  lacij.view.rectnodeselection
   (:use lacij.view.core)
   (:require [analemma.svg :as s]))
 

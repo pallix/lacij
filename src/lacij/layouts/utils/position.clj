@@ -3,7 +3,7 @@
 
 
 (ns lacij.layouts.utils.position
-  (:use lacij.graph.core
+  (:use lacij.model.core
         lacij.view.core))
 
 (defn make-graph-visible

@@ -14,7 +14,7 @@
         lacij.opt.annealing
         (lacij.geom intersect distance)
         (lacij.layouts core randomlayout)
-        lacij.graph.core
+        lacij.model.core
         lacij.view.core))
 
 (defn x-edges

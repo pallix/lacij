@@ -1,40 +1,20 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Various functions to manipulate the graph model"}
-  lacij.graph.svg.graph-helpers
+  lacij.model.graph-helpers
   (:use (tikkba dom swing core)
         tikkba.apps.svgbrowser
         lacij.utils.core
-        lacij.graph.core
-        (lacij.graph.svg node edge graph-history)
-        (lacij.view.svg rectnodeview circlenodeview)
+        lacij.model.core
+        (lacij.model edge graph-history)
         lacij.view.core
-        (lacij.view.svg graphview nodeview edgeview nodelabelview edgelabelview))
-  (:require [tikkba.utils.dom :as dom]))
+        (lacij.view graphview nodeview edgeview nodelabelview edgelabelview
+                    rectnodeview circlenodeview))
+  (:require [tikkba.utils.dom :as dom]
+            [lacij.model.node :as node]))
 
-(defn create-node-view
-  [id shape x y node-styles style node-attrs attrs node-view-factory]
-  (if (nil? node-view-factory)
-    (nodeview id shape x y (merge node-styles style) (merge node-attrs attrs))
-    (if-let [node-view (node-view-factory shape x y style attrs)]
-      node-view
-      (nodeview id shape x y (merge node-styles style) (merge node-attrs attrs)))))
 
-(defn create-node
-  [id params node-styles node-attrs node-view-factory]
-  (let [{:keys [label x y style shape] :or {shape :rect style {}
-                                            x 0 y 0}}
-        (merge node-attrs params)
-        attrs (dissoc params :label :x :y :style :shape)
-        node-view (create-node-view id shape x y
-                                    node-styles
-                                    style
-                                    node-attrs
-                                    attrs
-                                    node-view-factory)
-         node-view (add-node-label node-view (nodelabelview label :center))]
-    [(svgnode id node-view) node-view]))
 
 (defn create-edge
   [id params id-node-src id-node-dst edge-styles edge-attrs]
@@ -47,17 +27,7 @@
         edge (svgedge id edgeview id-node-src id-node-dst)]
     [edge edgeview]))
 
-(defn update-node-edges
-  [graph edgeid srcid dstid]
-  {:pre [(not (nil? (node graph srcid)))
-         (not (nil? (node graph dstid)))]}
-  (let [srcnode (node graph srcid)
-        srcnode (update-in srcnode [:outedges] conj edgeid)
-        dstnode (node graph dstid)
-        dstnode (update-in dstnode [:inedges] conj edgeid)]
-    (update-in graph [:nodes] assoc
-               srcid srcnode
-               dstid dstnode)))
+
 
 (defn listeners-id [graph id]
   (get (deref (:listeners graph)) id))

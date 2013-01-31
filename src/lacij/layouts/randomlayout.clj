@@ -6,7 +6,7 @@
   lacij.layouts.randomlayout
   (:use lacij.geom.intersect
         lacij.layouts.core
-        lacij.graph.core
+        lacij.model.core
         lacij.view.core))
 
 (defrecord RandomLayout

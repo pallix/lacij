@@ -2,13 +2,13 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Implementation of the EdgeView protocol for segmented edges"}
-  lacij.view.svg.segmentededgeview
+  lacij.view.segmentededgeview
   (:use clojure.pprint
         tikkba.dom
         lacij.geom.distance
-        lacij.graph.core
+        lacij.model.core
         lacij.view.core
-        lacij.view.svg.utils.style)
+        lacij.view.utils.style)
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]
             [tikkba.utils.dom :as dom]))
@@ -67,13 +67,9 @@
             (apply-styles default style)
             (apply-attrs attrs2)))))))
 
-(defrecord SvgSegmentedEdgeView
+(defrecord SegmentedEdgeView
     [labels style attrs points]
   EdgeView
-
-  (add-edge-label
-   [this label]
-   (update-in this [:labels] conj label))
 
   (view-edge
    [this graph edge context]

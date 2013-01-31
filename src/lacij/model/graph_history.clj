@@ -2,10 +2,10 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Functions for the implementation of undo/redo"}
-  lacij.graph.svg.graph-history
+  lacij.model.graph-history
   (:use clojure.pprint
         clojure.set
-        lacij.graph.svg.history
+        lacij.model.history
         tikkba.apps.svgbrowser)
   (:require [tikkba.utils.dom :as dom]))
 

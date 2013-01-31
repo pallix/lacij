@@ -11,7 +11,7 @@
             to a tree in their topology."}
   lacij.layouts.radiallayout
   (:use clojure.pprint
-        lacij.graph.core
+        lacij.model.core
         lacij.graph.svg.graph
         lacij.utils.core
         lacij.layouts.core

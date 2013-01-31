@@ -12,7 +12,7 @@
   (:use clojure.pprint
         lacij.geom.intersect
         lacij.layouts.core
-        lacij.graph.core
+        lacij.model.core
         lacij.view.core
         lacij.utils.core
         lacij.layouts.utils.position)
