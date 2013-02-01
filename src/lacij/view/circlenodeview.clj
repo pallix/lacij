@@ -20,6 +20,8 @@
      x
      y
      radius
+     width
+     height
      labels
      default-style
      style
@@ -73,4 +75,4 @@
         attrs (dissoc attrs :r :style :x :y :id :cx :cy)
         style (s/parse-inline-css style)
         r (Double/parseDouble r)]
-    (CircleNodeView. id x y r [] {} style attrs #{})))
+    (CircleNodeView. id x y r (* 2 r) (* 2 r) [] {} style attrs #{})))

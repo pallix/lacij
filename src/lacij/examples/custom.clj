@@ -1,10 +1,9 @@
 (ns lacij.examples.custom 
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
+        lacij.view.graphview
         lacij.view.core
         analemma.xml
-        (lacij.view.svg rectnodeview circlenodeview))
+        (lacij.view rectnodeview circlenodeview))
   (:require [analemma.svg :as svg]))
 
 (defn create-node-view []
@@ -21,8 +20,11 @@
 
   (decorate
     [this view context]
-    (let [width (node-width view)
-          height (node-height view)]
+    (let [width (:width view)
+          height (:height view)]
+      (prn "vi" view)
+      (prn "w" width)
+      (prn "h" height)
       (-> (svg/path [:M [(double (/ width 2)) 0]
                      :L [(double (/ width 2)) height]
                      :M [0 (double (/ height 2))]
@@ -32,7 +34,7 @@
 
 (defn -main []
   (let [xmlcircle (parse-xml (slurp "src/lacij/examples/green-circle.svg"))]
-   (-> (create-graph)
+   (-> (graph)
        (set-node-view-factory (create-node-view))
        (add-node :athena "Athena" :x 10 :y 30)
        (add-node :zeus "Zeus" :x 200 :y 150)
