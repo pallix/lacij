@@ -14,8 +14,6 @@
             [tikkba.utils.dom :as dom])
   (:import java.awt.Rectangle))
 
-(def selection-decorator (rectnodeselection))
-
 (defrecord RectNodeView
     [id
      x

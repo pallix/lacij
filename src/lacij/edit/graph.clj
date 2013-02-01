@@ -10,6 +10,7 @@
         [lacij.view.edgelabelview :only [create-edgelabelview]]
         [lacij.view.core :only [add-view-label]]
         [lacij.view.nodelabelview :only [create-nodelabelview]]
+        [tikkba.core :only [do-batik]]
         [tikkba.swing :only [set-document]])
   (:require [lacij.model.graph :as g]
             [lacij.model.node :as n]
@@ -199,28 +200,6 @@
   [this & params]
   (add-default-edge-attrs-kv this (apply hash-map params)))
 
-;; (defn add-listener-vec
-;;  [graph id type f args]
-;;  (if-let [el (dom/element-id xmldoc id)]
-;;    (do
-;;      (apply dom/add-event-listener el type f args)
-;;      (update-listeners graph id type f args)
-;;      graph)
-;;    graph))
-
-;; (defn add-listener
-;;   [this id type f & args]
-;;   (add-listener-vec this id type f args))
-
-(defmacro do-update [graph & body]
-  "Executes body inside an update"
-  `(let [graph# ~graph]
-     (try
-       (begin-update graph#)
-       ~@body
-       (finally
-        (end-update graph#)))))
-
 (defn remove-edge-by-id
   [graph id]
   (let [e ((:edges graph) id)
@@ -286,14 +265,28 @@
        desty (+ y ydelta)]
    (move-node graph id destx desty)))
 
+(defn begin-update
+ [graph]
+ (.beginUpdate (:undosupport graph)))
 
+(defn end-update
+ [graph]
+ (.endUpdate (:undosupport graph)))
 
+(defmacro do-update [graph & body]
+  "Executes body inside an update"
+  `(let [graph# ~graph]
+     (try
+       (begin-update graph#)
+       ~@body
+       (finally
+        (end-update graph#)))))
 
 (defmacro do-batik-update
   "Executes body inside a batik thread and insides an update"
   [graph & body]
   `(let [graph# ~graph
-         svgcanvas# (canvas graph#)]
+         svgcanvas# (:svgcanvas graph#)]
      (do-batik
       svgcanvas#
       (do-update

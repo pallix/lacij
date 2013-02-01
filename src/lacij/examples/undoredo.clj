@@ -1,12 +1,9 @@
 (ns lacij.examples.undoredo
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
+        lacij.edit.dynamic
         analemma.xml
         (tikkba swing dom core)
-        tikkba.utils.xml
-        lacij.graph.svg.history
-        (lacij.view.svg rectnodeview circlenodeview))
+        tikkba.utils.xml)
   (:import org.apache.batik.apps.svgbrowser.DOMViewer
            (javax.swing SwingUtilities JFrame JButton BoxLayout JPanel)
            (java.awt.event ActionListener)
@@ -26,7 +23,7 @@ Returns the listener."
 
 (defn gen-graph
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-node :Heracles "Heracles" :x 10 :y 30)
       (add-node :clickme "Click on me" :x 400 :y 30)))
 
@@ -42,7 +39,7 @@ Returns the listener."
 (defn on-do-listener
   [event]
   (let [g (deref *graph*)
-        svgcanvas (canvas g)
+        svgcanvas (:svgcanvas g)
         nodeid (keyword (gensym "appolon"))]
     (do-batik-update
       g
@@ -55,7 +52,7 @@ Returns the listener."
 (defn on-undo-listener
   [event]
   (let [g (deref *graph*)
-        svgcanvas (canvas g)]
+        svgcanvas (:svgcanvas g)]
     (do-batik
      svgcanvas
      (when (can-undo? g)
@@ -65,7 +62,7 @@ Returns the listener."
 (defn on-redo-listener
   [event]
   (let [g (deref *graph*)
-        svgcanvas (canvas g)]
+        svgcanvas (:svgcanvas g)]
     (do-batik
      svgcanvas
      (when (can-redo? g)
@@ -75,7 +72,7 @@ Returns the listener."
 (defn on-click-listener
   [event]
   (let [g (deref *graph*)
-        svgcanvas (canvas g)]
+        svgcanvas (:svgcanvas g)]
     (do-batik-update
      g
      (let [g (add-node-styles! g :clickme :fill (random-color))]
@@ -104,8 +101,8 @@ Returns the listener."
 
 (defn -main []
   (let [g (deref *graph*)
-        doc (view g)
-        svgcanvas (canvas g)
+        doc (:xmldoc g)
+        svgcanvas (:svgcanvas g)
         updatemanager (update-manager svgcanvas)
         frame (create-frame svgcanvas)
         g (build g)
@@ -114,7 +111,3 @@ Returns the listener."
     (reset! *graph* g)
     (SwingUtilities/invokeAndWait
      (fn [] (.setVisible frame true)))))
-
-
-
-

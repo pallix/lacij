@@ -59,6 +59,21 @@
     ;; (assoc-in graph [:listeners id] el-listeners)
     ))
 
+(defn add-listener-vec
+ [graph id type f args]
+ (if-let [el (dom/element-id (:xmldoc graph) id)]
+   (do
+     (apply dom/add-event-listener el type f args)
+     (update-listeners graph id type f args)
+     graph)
+   graph))
+
+(defn add-listener
+  [this id type f & args]
+  (add-listener-vec this id type f args))
+
+
+
 (defn- replace-node
   [graph id new-node new-el]
   (let [xmldoc (:xmldoc graph)
@@ -168,14 +183,6 @@
        (swap! (:history graph) update-current-state (:graphstate graph))
        graph))
    graph))
-
-(defn begin-update
- [graph]
- (.beginUpdate (:undosupport graph)))
-
-(defn end-update
- [graph]
- (.endUpdate (:undosupport graph)))
 
 (defn set-node-selected!
  [graph id selected]
