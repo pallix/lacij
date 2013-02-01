@@ -74,8 +74,6 @@
          ;; if several edges have the same length, we take the one
          ;; that is closest to the center of the dst node
          (let [disttocenter (fn [dist]
-                              (prn "dist=" dist)
-                              (prn "x y=" x2 y2)
                               (distance (first (:dst-port dist))
                                         (second (:dst-port dist))
                                         x2

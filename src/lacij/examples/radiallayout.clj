@@ -1,7 +1,6 @@
 (ns lacij.examples.radiallayout
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
+        lacij.view.graphview
         (lacij.layouts core layout)))
 
 (defn gen-graph5 ;; KO
@@ -42,7 +41,7 @@
 
 (defn gen-graph2 ;; OK
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-nodes :r :t1 :t2 :t3 :u1 :u2)
       (add-edges [:t1 :r] [:t2 :r] [:t3 :r] [:u1 :t2] [:u2 :t2])
       ))

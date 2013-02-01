@@ -4,9 +4,9 @@
 (ns ^{:doc "This layout spreads nodes randomly
             but still avoid overlapping."}
   lacij.layouts.randomlayout
-  (:use lacij.geom.intersect
+  (:use lacij.edit.graph
+        lacij.geom.intersect
         lacij.layouts.core
-        lacij.model.core
         lacij.view.core))
 
 (defrecord RandomLayout
@@ -17,15 +17,15 @@
    [this graph options]
    (letfn [(collision?
             [graph id]
-            (let [view (node-view (node graph id))
-                  nodeviews (map #(node-view (node graph %)) (nodes graph))]
+             (let [view (:view ((:nodes graph) id))
+                   nodeviews (map :view (vals (:nodes graph)))]
               (some #(and (not= % view)
                           (apply rect-intersects?
                                  (concat (bounding-box view)
                                          (bounding-box %))))
                     nodeviews)))]
      (let [{:keys [width height]
-            :or {width (width graph) height (height graph)}} options
+            :or {width (:width graph) height (:height graph)}} options
             width (if (nil? width) 1024 width)
             height (if (nil? height) 768 height)]
        (reduce
@@ -38,7 +38,7 @@
                  (repeatedly (fn []
                                [(rand-int width) (rand-int height)]))))))
         graph
-        (nodes graph))))))
+        (keys (:nodes graph)))))))
 
 (defn randomlayout []
   (RandomLayout.)) 

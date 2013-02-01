@@ -1,4 +1,4 @@
-;;; Copyright © 2013 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns lacij.edit.graph
@@ -246,7 +246,8 @@
 
 (defn move-node
  [graph id x y]
- (let [node ((:nodes) id)
+ {:pre [((:nodes graph) id)]}
+ (let [node ((:nodes graph) id)
        current-view (:view node)
        new-view (assoc current-view :x x :y y)
        node (assoc node :view new-view)]

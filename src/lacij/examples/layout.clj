@@ -1,7 +1,7 @@
 (ns lacij.examples.layout
   (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+        lacij.edit.graph
+        lacij.view.graphview
         (lacij.layouts core layout)))
 
 (defn filter-opposite
@@ -25,7 +25,7 @@
                             dst nodesid
                             :when (not= src dst)]
                         [src dst]))))
-        g (create-graph :width 800 :height 800)
+        g (graph :width 800 :height 800)
         g (reduce (fn [g id]
                     (add-node g id (str id)))
                   g nodesid)
