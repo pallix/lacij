@@ -1,7 +1,6 @@
 (ns lacij.examples.def
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
+        lacij.view.graphview
         analemma.svg
         analemma.xml))
 
@@ -20,7 +19,7 @@
         (add-attrs :transform "scale (0.8) translate (7.4, 1)"))]])
 
 (defn -main []
-  (-> (create-graph)
+  (-> (graph)
       (add-def dotl-marker)
       (add-node :hermes "Hermes" :x 10 :y 30)
       (add-node :zeus "Zeus" :x 250 :y 150)
