@@ -1,8 +1,9 @@
 (ns lacij.examples.hierarchicallayout2
   (:use clojure.pprint
         lacij.layouts.layout
-        laij.edit.graph
-        lacij.graph.svg.graph))
+        lacij.model.graph
+        lacij.edit.graph
+        lacij.view.graphview))
 
 ;; TODO: test empty graph
 (defn -main
