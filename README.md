@@ -68,9 +68,6 @@ Radial Layout:
 Hierarchical Layout:
 ![Hierarchical layout](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/hierarchical.png)
 
-Naive Layout (a simple layout used to test the library):
-![Naive layout](https://github.com/pallix/lacij/raw/master/resources/lacij/examples/layout1.png)
-
 ## Learning by doing
 
 __All examples are available in the__ [examples directory](https://github.com/pallix/lacij/tree/master/src/lacij/examples/).
