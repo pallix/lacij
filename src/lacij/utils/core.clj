@@ -77,5 +77,4 @@
   "Returns the index of an element in a collection. This performs
    a linear search."
   [col x]
-  {:post [(do (prn "col=" col) (prn "x=" x) (not (nil? %)))]}
   (second (first (filter #(= (first %) x) (partition 2 (interleave col (iterate inc 0)))))))

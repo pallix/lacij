@@ -13,7 +13,6 @@
         lacij.geom.intersect
         lacij.layouts.core
         lacij.model.graph
-        lacij.edit.graph
         lacij.view.core
         lacij.utils.core
         lacij.layouts.utils.position)
@@ -103,7 +102,7 @@
   [context]
   (let [{:keys [graph layers]} context
         context (add-dummy-nodes-helper (assoc context :dummy-nodes #{})
-                                        (vals (:nodes graph)))]
+                                        (keys (:nodes graph)))]
     (update-in context [:layers] build-layer-to-node)))
 
 (defn- bary
@@ -111,10 +110,7 @@
   (let [{:keys [layers dummy-graph]} context
         {:keys [layer-to-node]} layers
         nodes (get layer-to-node (dec layeru))
-        _ (prn "u =" u)
         vs (out-children dummy-graph u)
-        _ (prn "vs =" vs)
-        _ (prn "nodes =" nodes)
         val (/ (apply + (map #(index-of nodes %) vs)) (count vs))]
     ;; (printf "u = %s (%s) nodes = %s vs = %s => %s\n" u layeru nodes vs val)
     val
@@ -172,7 +168,7 @@
   [context]
   (let [{:keys [dummy-graph dummy-nodes layers]} context
         layer-to-node (:layer-to-node layers)
-        allnodes (vals (:nodes dummy-graph))
+        allnodes (keys (:nodes dummy-graph))
         upnodes (sort-by-priority (map (fn [n] [n (up-priority dummy-graph dummy-nodes n)]) allnodes))
         downnodes (sort-by-priority (map (fn [n] [n (down-priority dummy-graph dummy-nodes n)]) allnodes))]
     (assoc context
@@ -388,7 +384,7 @@
   (let [[x & xs] queue]
     (if (or (nil? x) (neg? step))
       dummy-graph
-      (let [[_ current] (center (:view ((:nodes dummy-graph) x)))
+      (let [[_ current] (:center (:view ((:nodes dummy-graph) x)))
             down (down-median dummy-graph x)
             up (up-median dummy-graph x)
             med (int (/ (+ down up) 2))]
@@ -417,8 +413,9 @@
         dummy-graph (:dummy-graph context)
         inlayer-space (:inlayer-space context)]
     (assoc context :dummy-graph
-           (minnode-helper dummy-graph #{} (vec (vals (:nodes dummy-graph)))
-                           (set (vals (:nodes dummy-graph)))
+           (minnode-helper dummy-graph #{}
+                           (vec (keys (:nodes dummy-graph)))
+                           (set (keys (:nodes dummy-graph)))
                            node-to-layer layer-to-node inlayer-space 3000))))
 
 (defn- assign-coordinates
@@ -458,7 +455,7 @@
                       (move-node graph nid x y))
                     graph))
                 graph
-                (vals (:nodes dummy-graph)))]
+                (keys (:nodes dummy-graph)))]
     (assoc context :graph graph)))
 
 (defn- get-segmented-path
@@ -485,8 +482,7 @@
   (let [begin (first segment)
         end (last segment)
         points (map #(center (:view ((:nodes dummy-graph) %))) (butlast (rest segment)))
-        edgeid (first (filter #(= end (:dst ((:edges graph) %)))
-                              (:outedges ((:nodes graph) begin))))
+        edgeid (first (filter #(= end (:dst ((:edges graph) %))) (:outedges ((:nodes graph) begin))))
         eview (:view ((:edges graph) edgeid))
         {:keys [labels style attrs]} eview
         graph (remove-edge graph begin end)
@@ -518,7 +514,7 @@
         graph (reduce (fn [graph nid]
                         (segment-outgoing-edges graph nid dummy-graph dummy-nodes))
                       graph
-                      (vals (:nodes graph)))]
+                      (keys (:nodes graph)))]
     (assoc context :graph graph)))
 
 (defn- cleanup
