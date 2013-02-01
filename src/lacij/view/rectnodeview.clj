@@ -26,7 +26,8 @@
      default-style
      style
      attrs
-     decorators]
+     decorators
+     selection-decorator]
   NodeView
 
   (view-node
@@ -70,11 +71,6 @@
    (let [margin 5]
      [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))])))
 
-(defn create-rectnodeview
-  [id x y width height labels default-style style attrs decorators]
-  (RectNodeView. id x y
-                 width height [] default-style style attrs #{}))
-
 (defn import-rect
   [xmlcontent infile-id id x y]
   (let [rect (first (xml/filter-xml xmlcontent [{:id (name infile-id)}]))
@@ -85,4 +81,5 @@
         attrs (dissoc attrs :width :height :style :x :y :id)
         style (s/parse-inline-css style)]
     (RectNodeView. id x y
-                   width height [] {} style attrs #{})))
+                   width height [] {} style attrs #{}
+                   (->RectNodeSelection))))

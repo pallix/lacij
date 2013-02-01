@@ -21,8 +21,4 @@
                   :stroke-width bordersize
                   :stroke-dasharray "4, 4")))))
 
-(defn rectnodeselection
-  []
-  (RectNodeSelection.))
-
 

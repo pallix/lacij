@@ -1,11 +1,10 @@
 (ns lacij.examples.dynamic
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
+        lacij.edit.dynamic
+        lacij.view.graphview
         analemma.xml
         (tikkba swing dom core)
-        tikkba.utils.xml
-        (lacij.view.svg rectnodeview circlenodeview))
+        tikkba.utils.xml)
   (:import (javax.swing JFrame JButton BoxLayout SwingUtilities)
            (java.awt.event ActionListener)
            java.awt.Component))
@@ -30,7 +29,7 @@ Returns the listener."
 
 (defn gen-graph
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-node :athena "Athena" :x 10 :y 30)
       (add-node :zeus "Zeus" :x 200 :y 150)
       (add-node :hera "Hera" :x 500 :y 150)
@@ -58,9 +57,9 @@ Returns the listener."
 
 (defn -main []
   (let [g (gen-graph)
-        doc (view g)
+        doc (:xmldoc g)
         _ (export g "/tmp/dynamic1.svg")
-        svgcanvas (canvas g)
+        svgcanvas (:svgcanvas g)
         frame (create-frame svgcanvas g)]
     (SwingUtilities/invokeAndWait
      (fn [] (.setVisible frame true)))))

@@ -3,12 +3,14 @@
 
 (ns lacij.edit.graph
   (:use [lacij.view.graphview :only [view-graph]]
+        [lacij.model.history :only [add-state]]
         [lacij.view.nodeview :only [create-nodeview]]
         [lacij.view.straightedgeview :only [create-straight-edgeview]]
         [lacij.view.segmentededgeview :only [create-segmented-edgeview]]
         [lacij.view.edgelabelview :only [create-edgelabelview]]
         [lacij.view.core :only [add-view-label]]
-        [lacij.view.nodelabelview :only [create-nodelabelview]])
+        [lacij.view.nodelabelview :only [create-nodelabelview]]
+        [tikkba.swing :only [set-document]])
   (:require [lacij.model.graph :as g]
             [lacij.model.node :as n]
             [lacij.model.edge :as e]))
@@ -23,7 +25,7 @@
                        (merge node-styles style)
                        (merge node-attrs attrs)))))
 
-(defn- create-node
+(defn create-node
   [id params node-styles node-attrs node-view-factory]
   (let [{:keys [label x y style shape] :or {shape :rect style {}
                                             x 0 y 0}}
@@ -51,7 +53,7 @@
                              (:node-view-factory graph))]
    (update-in graph [:nodes] assoc id node)))
 
-(defn- update-node-edges
+(defn update-node-edges
   [graph edgeid srcid dstid]
   {:pre [(not (nil? ((:nodes graph) srcid)))
          (not (nil? ((:nodes graph) dstid)))]}
@@ -90,7 +92,7 @@
        graph (update-node-edges graph id id-node-src id-node-dst)]
    (update-in graph [:edges] assoc id edge)))
 
-(defn- x-add-node
+(defn x-add-node
   [f this id & params]
   (cond
    (empty? params)
@@ -109,11 +111,7 @@
   [this id & params]
   (apply x-add-node add-node-kv this id params))
 
-;; (defn add-node!
-;;   [this id & params]
-;;   (apply x-add-node add-node-kv! this id params))
-
-(defn- x-add-edge
+(defn x-add-edge
   [f this id src-id dst-id & params]
   (cond
    (empty? params)
@@ -151,10 +149,6 @@
                                                             (dissoc params :style)))
              node (n/create-node id nodeview)]
          (update-in graph [:nodes] assoc id node))))
-
-;; (defn add-edge!
-;;   [this id src-id dst-id & params]
-;;   (x-add-edge add-edge-kv! this id src-id dst-id params))
 
 (defn add-label
   [this id label & params]
@@ -218,10 +212,6 @@
 ;;   [this id type f & args]
 ;;   (add-listener-vec this id type f args))
 
-;; (defn add-node-styles!
-;;   [this id & params]
-;;   (add-node-styles-kv! this id (apply hash-map params)))
-
 (defmacro do-update [graph & body]
   "Executes body inside an update"
   `(let [graph# ~graph]
@@ -255,11 +245,9 @@
                                    :width (:width graph)
                                    :height (:height graph)
                                    :viewBox (:viewBox graph)})
-  ;; TODO:
-  ;; (set-document (:svgcanvas ) xmldoc)
-  
+   (set-document (:svgcanvas graph) (:xmldoc graph))
   ;; set initial state:
-  ;; (swap! history add-state (graphstate graph))
+   (swap! (:history graph) add-state (:graphstate graph))
   graph)
 
 (defn set-node-view-factory
@@ -299,92 +287,6 @@
    (move-node graph id destx desty)))
 
 
-;; (defn add-node-kv!
-;;  [graph id params]
-;;  (let [[node node-view] (create-node id params node-styles node-attrs node-view-factory)
-;;        node-element (view-node node-view node {:doc xmldoc})
-;;        docel (dom/document-element xmldoc)
-;;        edit (node-inserted-edit docel nil node-element)
-;;        graph (update-in graph [:nodes] assoc id node)
-;;        edit2 (add-state-edit history (graphstate graph))
-;;        compedit (compound-edit edit edit2)]
-;;    (post-edit undosupport compedit)
-;;    graph))
-
-;; (defn add-node-styles-kv!
-;;  [graph id styles]
-;;  (if-let [node (get nodes id)]
-;;    (let [nodeview (node-view node)
-;;          nodeview (add-node-styles-kv nodeview styles)
-;;          node (svgnode id nodeview)
-;;          node-element (view-node nodeview node {:doc xmldoc})
-;;          [graph edit] (replace-node graph id node node-element)]
-;;      (post-edit undosupport edit)
-;;      graph)
-;;    graph))
-
-;; (defn add-edge-kv!
-;;  [graph id id-node-src id-node-dst params]
-;;  (let [[edge edgeview] (create-edge id params id-node-src id-node-dst edge-styles edge-attrs)
-;;        edge-element (view-edge edgeview graph edge {:doc xmldoc})
-;;        docel (dom/document-element xmldoc)
-;;        edit (node-inserted-edit docel nil edge-element)
-;;        graph (update-in graph [:edges] assoc id edge)
-;;        graph (update-node-edges graph id id-node-src id-node-dst)
-;;        edit2 (add-state-edit history (graphstate graph))
-;;        compedit (compound-edit edit edit2)]
-;;    (post-edit undosupport compedit)
-;;    graph))
-
-;; (defn can-undo?
-;;  [graph]
-;;  (.canUndo undomanager))
-
-;; (defn undo!
-;;  [graph]
-;;  (if (can-undo? graph)
-;;    (do
-;;      (.undo undomanager)
-;;      (let [graph (restore-state graph (current-state (deref history)))
-;;            graph (refresh-nodes-selections graph
-;;                                            (:nodes-selections graph)
-;;                                            (:nodes-selections graph))]
-;;        graph))
-;;    graph))
-
-;; (defn can-redo?
-;;  [graph]
-;;  (.canRedo undomanager))
-
-;; (defn redo!
-;;  [graph]
-;;  (if (can-redo? graph)
-;;    (do
-;;      (.redo undomanager)
-;;      (let [graph (restore-state graph (current-state (deref history)))
-;;            graph (refresh-nodes-selections graph
-;;                                            (get graph :nodes-selections)
-;;                                            (:nodes-selections graph))]
-;;        (swap! (:history graph) update-current-state (graphstate graph))
-;;        graph))
-;;    graph))
-
-;; (defn begin-update
-;;  [graph]
-;;  (.beginUpdate undosupport))
-
-;; (defn end-update
-;;  [graph]
-;;  (.endUpdate undosupport))
-
-;; (defn set-node-selected!
-;;  [graph id selected]
-;;  (let [current-selected (conj (get graph :nodes-selections) id)
-;;        graph (refresh-nodes-selections graph
-;;                                        (get graph :nodes-selections)
-;;                                        current-selected)]
-;;    (swap! history update-current-state (graphstate graph))
-;;    graph))
 
 
 (defmacro do-batik-update
