@@ -1,18 +1,16 @@
 (ns lacij.examples.listener
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
+        lacij.edit.dynamic
         analemma.xml
         (tikkba swing dom core)
-        tikkba.utils.xml
-        (lacij.view.svg rectnodeview circlenodeview))
+        tikkba.utils.xml)
   (:import (javax.swing JFrame JButton BoxLayout SwingUtilities)
            (java.awt.event ActionListener)
            java.awt.Component))
 
 (defn gen-graph
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-node :clickme "Click on me" :x 10 :y 30)
       (build)))
 
@@ -37,7 +35,7 @@
 (defn on-click-listener
   [event]
   (let [g (deref *graph*)
-        svgcanvas (canvas g)
+        svgcanvas (:svgcanvas g)
         nodeid (gensym "appolon")]
     (do-batik
      svgcanvas
@@ -49,8 +47,8 @@
 
 (defn -main []
   (let [g (gen-graph)
-        doc (view g)
-        svgcanvas (canvas g)
+        doc (:svgdoc g)
+        svgcanvas (:svgcanvas g)
         frame (create-frame svgcanvas)
         g (add-listener g :clickme "click" on-click-listener)]
     (reset! *graph* g)
