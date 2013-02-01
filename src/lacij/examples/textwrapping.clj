@@ -1,7 +1,6 @@
 (ns lacij.examples.textwrapping
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph))
+  (:use lacij.edit.graph
+        lacij.view.graphview))
 
 (defn -main []
   (let [g (-> (create-graph :width 800 :height 800)

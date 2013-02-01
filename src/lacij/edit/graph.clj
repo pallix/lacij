@@ -141,7 +141,7 @@
              edge (e/create-edge id edgeview (:src edge) (:dst edge))]
          (update-in graph [:edges] assoc id edge))
 
-       ((:nodes) id)
+       ((:nodes graph) id)
        (let [node ((:nodes graph) id)
              nodeview (:view node)
              nodeview (update-in nodeview [:labels] conj
