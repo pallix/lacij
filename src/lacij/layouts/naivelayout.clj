@@ -1,4 +1,4 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "This layout uses a simulated annealing to
@@ -14,30 +14,30 @@
         lacij.opt.annealing
         (lacij.geom intersect distance)
         (lacij.layouts core randomlayout)
-        lacij.graph.core
+        lacij.edit.graph
         lacij.view.core))
 
 (defn x-edges
   "Returns the carthesian product of all edges, couples
    with two identical edges are removed."
   [graph]
-  (let [alledges (edges graph)]
+  (let [alledges (keys (:edges graph))]
     (vec (for [eid1 alledges
                eid2 alledges
                :when (not= eid1 eid2)]
-           [(edge graph eid1) (edge graph eid2)]))))
+           [((:edges graph) eid1) ((:edges graph) eid2)]))))
 
 (defn x-nodesviews
   [graph]
-  (let [allnodes (nodes graph)]
+  (let [allnodes (vals (:nodes graph))]
     (for [n1 allnodes
           n2 allnodes
           :when (not= n1 n2)]
-      [(node-view (node graph n1)) (node-view (node graph n2))])))
+      [(:view n1) (:view n2)])))
 
 (defn points [graph couple]
   "Returns the x1 y1 x2 y2 x3 y3 x4 y4 points of an edge couples"
-  (mapcat #(edge-location (edge-view %) graph %) couple))
+  (mapcat #(edge-location (:view %) graph %) couple))
 
 (defn count-crossing
   "Returns the number of crossing between edges"
@@ -62,23 +62,21 @@
 
 (defn x-nodeviewedges
   [graph]
-  (let [allnodes (nodes graph)
-        alledges (edges graph)]
-    (for [nid allnodes
-          eid alledges
-          :when (let [e (edge graph eid)
-                      nsrc (src e)
-                      ndst (dst e)]
-                  (and (not= nsrc nid) (not= ndst nid)))]
-      [(node-view (node graph nid))
-       (edge graph eid)])))
+  (let [allnodes (vals (:nodes graph))
+        alledges (vals (:edges graph))]
+    (for [n allnodes
+          e alledges
+          :when (let [nsrc (:src e)
+                      ndst (:dst e)]
+                  (and (not= nsrc (:id n)) (not= ndst (:id n))))]
+      [(:view n) e])))
 
 (defn count-nodeedge-crossing
   [graph nodeviewedge-couples debug]
   (reduce (fn [ncross couple]
             (let [[view edge] couple
                   [x y width height] (bounding-box view)
-                  [x1 y1 x2 y2] (edge-location (edge-view edge) graph edge)
+                  [x1 y1 x2 y2] (edge-location (:view edge) graph edge)
                   intersect (line-intersects? x1 y1 x2 y2 x y width height)]
               (if intersect
                 (inc ncross)
@@ -121,7 +119,7 @@
 
 (defn- neighbour
   [width height graph]
-  (let [id (rand-nth (nodes graph))]
+  (let [id (rand-nth (keys (:nodes graph)))]
     (move-node graph id (rand-int (- width 100)) (rand-int (- height 50)))))
 
 
@@ -132,11 +130,11 @@
   (layout-graph
    [this graph options]
    (let [{:keys [width height]
-            :or {width (width graph) height (height graph)}} options
+            :or {width (:width graph) height (:height graph)}} options
             width (if (nil? width) 1024 width)
             height (if (nil? height) 768 height)
             graph (layout-graph (randomlayout) graph {:width width :height height})
-         niter (* 25 (count (nodes graph)))
+            niter (* 25 (count (:nodes graph)))
          graph (optimize graph energy (partial neighbour width height)
                          :iterations niter :init-temp 0.27 :calibration false)]
      ;; (printf "energy of the solution =\n")

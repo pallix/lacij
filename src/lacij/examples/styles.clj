@@ -1,10 +1,9 @@
 (ns lacij.examples.styles
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph))
+  (:use lacij.edit.graph
+        lacij.view.graphview))
 
 (defn -main []
-  (-> (create-graph :width 800 :height 400)
+  (-> (graph :width 800 :height 400)
       (add-default-node-style :fill "lightgreen")
       (add-default-edge-style :stroke "royalblue")
       (add-node :hermes "Hermes" :x 10 :y 30 :style {:fill "lightblue"})

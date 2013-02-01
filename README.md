@@ -16,14 +16,14 @@ The easiest way to use Lacij in your own projects is via
 [Leiningen](http://github.com/technomancy/leiningen). Add the following
 dependency to your project.clj file:
 
-    [lacij "0.7.1"]
+    [lacij "0.8.0"]
     
     
 ## Usage
 
 ### Example 1: creating a simple graph and exporting it as SVG.
 
-    (let [g (-> (create-graph :width 400 :height 400)
+    (let [g (-> (graph :width 400 :height 400)
                   (add-node :hermes "Hermes" :x 10 :y 30)
                   (add-node :zeus "Zeus" :x 200 :y 125)
                   (add-node :ares "Ares" :x 200 :y 225)
@@ -36,7 +36,7 @@ dependency to your project.clj file:
 
 ### Example 2: using SVG styles to customize nodes and edges
 
-    (-> (create-graph :width 800 :height 400)
+    (-> (graph :width 800 :height 400)
         (add-default-node-style :fill "lightgreen")
         (add-default-edge-style :stroke "royalblue")
         (add-node :hermes "Hermes" :x 10 :y 30 :style {:fill "lightblue"})
@@ -96,7 +96,7 @@ Bug fixes and API improvements.
 
 ## License
 
-Copyright (C) 2010-2012 Fraunhofer Gesellschaft
+Copyright (C) 2010-2013 Fraunhofer Gesellschaft
 
 Distributed under the Eclipse Public License, the same as Clojure.
 

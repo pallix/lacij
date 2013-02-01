@@ -1,13 +1,14 @@
 (ns lacij.examples.hierarchicallayout2
   (:use clojure.pprint
         lacij.layouts.layout
-        lacij.graph.core
-        lacij.graph.svg.graph))
+        lacij.model.graph
+        lacij.edit.graph
+        lacij.view.graphview))
 
 ;; TODO: test empty graph
 (defn -main
   []
-  (let [g (-> (create-graph)
+  (let [g (-> (graph)
               (add-node :n1 :width 200)
               (add-node :n2a "n2a" :width 200)
               (add-node :n2b "n2b" :width 40)
@@ -15,7 +16,7 @@
               (add-edge (geneid) :n2a :n1)
               (add-edge (geneid) :n2b :n1)
               (add-edge (geneid) :n3 :n2a)
-              ;; (layout :hierarchical)
+              (layout :hierarchical)
               (build)
               )]
     (pprint g)

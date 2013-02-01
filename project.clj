@@ -1,4 +1,4 @@
-(defproject lacij/lacij "0.7.1" 
+(defproject lacij/lacij "0.8.0" 
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "[1.2.0,]"]
                  [tikkba "0.4.0"]]

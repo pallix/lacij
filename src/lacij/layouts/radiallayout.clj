@@ -1,4 +1,4 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Implementation of the radial layout described in
@@ -11,8 +11,8 @@
             to a tree in their topology."}
   lacij.layouts.radiallayout
   (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+        lacij.model.graph
+        lacij.edit.graph
         lacij.utils.core
         lacij.layouts.core
         lacij.opt.annealing
@@ -111,7 +111,7 @@
   (reduce (fn [layers-data nid]
             (assoc-in layers-data [:sizes nid] (count (leafs tree nid))))
           layers-data
-          (nodes tree)))
+          (keys (:nodes tree))))
 
 (defn label-angles-helper
   "Helper function to calculate the relative angle of each node in the tree."
@@ -300,8 +300,8 @@
    ;;  Options are: width, height, radius and
    ;;  sort-children, a function to sort the children. The default function
    ;;  tries to minimize the crossing
-   (let [options (merge {:width (or (width graph) 1900)
-                         :height (or (height graph) 1200)
+   (let [options (merge {:width (or (:width graph) 1900)
+                         :height (or (:height graph) 1200)
                          :radius 180
                          :sort-children default-sort-children
                          :root nil}

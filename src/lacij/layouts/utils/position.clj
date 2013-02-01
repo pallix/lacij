@@ -1,21 +1,21 @@
-;;; Copyright © 2010-2011 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 
 (ns lacij.layouts.utils.position
-  (:use lacij.graph.core
+  (:use lacij.edit.graph
         lacij.view.core))
 
 (defn make-graph-visible
   "Translates all nodes in the graph to make all nodes' coordinates positives."
   [graph]
-  (let [ids (nodes graph)
-        fnode (node graph (first ids))
-        xleft (node-x (node-view fnode))
-        yupper (node-y (node-view fnode))
+  (let [ids (keys (:nodes graph))
+        fnode ((:nodes graph) (first ids))
+        xleft (-> fnode :view :x)
+        yupper (-> fnode :view :y)
         [uppermost yupper leftmost xleft]
         (reduce (fn [[uppermost yupper leftmost xleft :as acc] id]
-                  (let [view (node-view (node graph id))
+                  (let [view (:view ((:nodes graph) id))
                         [xbox ybox _ _] (bounding-box view)]
                     ;; (printf "xbox = %s ybox = %s\n" xbox ybox)
                     (cond (and (< ybox yupper) (< xbox xleft))
@@ -35,15 +35,15 @@
     ;; (printf "xtrans = %s ytrans = %s\n" xtrans ytrans)
     (if (and (zero? xtrans) (zero? ytrans))
       graph
-      (reduce (fn [graph nid]
-                (let [view (node-view (node graph nid))
-                      x (node-x view)
-                      y (node-y view)
+      (reduce (fn [graph node]
+                (let [view (:view node)
+                      x (:x view)
+                      y (:y view)
                       destx (+ x xtrans)
                       desty (+ y ytrans)]
-                 (move-node graph nid destx desty)))
+                 (move-node graph (:id node) destx desty)))
               graph
-              (nodes graph)))))
+              (vals (:nodes graph))))))
 
 (defn best-node
   [graph valfn cmp]
@@ -51,13 +51,13 @@
             (if (cmp (valfn id) (valfn maxid))
               id
               maxid))
-          (nodes graph)))
+          (keys (:nodes graph))))
 
 (defn lowest-node
   [graph]
   (best-node graph
              (fn [id]
-               (let [view (node-view (node graph id))
+               (let [view (:view ((:nodes graph) id))
                      [_ y _ height] (bounding-box view)]
                  (+ y height)))
              >))
@@ -66,7 +66,7 @@
   [graph]
   (best-node graph
              (fn [id]
-               (let [view (node-view (node graph id))
+               (let [view (:view ((:nodes graph) id))
                      [x _ width _] (bounding-box view)]
                  (+ x width)))
              >))
@@ -79,11 +79,11 @@
   "adjusts the width and the height"
   [graph]
   (let [low (lowest-node graph)
-        view (node-view (node graph low))
+        view (:view ((:nodes graph) low))
         [_ y _ h] (bounding-box view)
         ylow (+ y h)
         right (rightest-node graph)
-        viewright (node-view (node graph right))
+        viewright (:view ((:nodes graph) right))
         [x _ w _] (bounding-box viewright)
         xright (+ x w)
         spacing 10]
@@ -92,9 +92,9 @@
 (defn widest-node
   "Returns the node id of the widest node in the collection. "
   [graph nodes]
-  (first (sort-by (fn [id] (node-width (node-view (node graph id)))) > nodes)))
+  (first (sort-by (fn [id] (:width (:view ((:nodes graph) id)))) > nodes)))
 
 (defn widest-value
   "Returns the width of the widest node in the collection. "
   [graph nodes]
-  (node-width (node-view (node graph (widest-node graph nodes)))))
+  (:width (:view ((:nodes graph) (widest-node graph nodes)))))

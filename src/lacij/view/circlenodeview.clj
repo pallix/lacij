@@ -1,54 +1,33 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Implementation of the NodeView protocol for a circle"}
-  lacij.view.svg.circlenodeview
+  lacij.view.circlenodeview
   (:use clojure.pprint
         lacij.utils.core
         lacij.view.core
-        lacij.view.svg.utils.style
+        lacij.view.utils.style
         tikkba.dom
-        [lacij.view.svg.utils text])
+        [lacij.view.utils text])
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]
             [tikkba.utils.dom :as dom])
   (:import java.lang.Math))
 
-(defrecord SvgCircleNodeView
-    [id x y radius labels default-style style attrs decorators]
+ 
+(defrecord CircleNodeView
+    [id
+     x
+     y
+     radius
+     width
+     height
+     labels
+     default-style
+     style
+     attrs
+     decorators]
   NodeView
-
-  (node-center
-   [this]
-   [(+ x radius) (+ y radius)])
-
-  (node-x
-   [this]
-   x)
-
-  (node-y
-   [this]
-   y)
-
-  (node-width
-    [this]
-    (* 2 radius))
-
-  (node-height
-    [this]
-    (* 2 radius))
-
-  (add-node-label
-   [this label]
-   (update-in this [:labels] conj label))
-
-  (add-node-styles-kv
-   [this styles]
-   (update-in this [:style] merge styles))
-
-  (node-labels
-   [this]
-   labels)
 
   (view-node
    [this node context]
@@ -69,26 +48,18 @@
                      decorations)]
      (dom/elements doc svg-ns xml)))
 
+  (center
+    [this]
+    [(+ x radius) (+ y radius)])
+
   (ports
    [this]
-    (let [[xcenter ycenter] (node-center this)]
+    (let [[xcenter ycenter] (center this)]
      (map (fn [angle]
             (let [ra (Math/toRadians angle)]
               [(double (+ xcenter (* radius (Math/cos ra))))
                (double (+ ycenter (* radius (Math/sin ra))))]))
           (range 0 360 22))))
-
-  (add-node-decorator
-   [this decorator]
-   (update-in this [:decorators] conj decorator))
-
-  (remove-node-decorator
-   [this decorator]
-   (update-in this [:decorators] disj decorator))
-
-  (node-decorators
-    [this]
-    decorators)
 
   (bounding-box
    [this]
@@ -104,4 +75,4 @@
         attrs (dissoc attrs :r :style :x :y :id :cx :cy)
         style (s/parse-inline-css style)
         r (Double/parseDouble r)]
-    (SvgCircleNodeView. id x y r [] {} style attrs #{})))
+    (CircleNodeView. id x y r (* 2 r) (* 2 r) [] {} style attrs #{})))

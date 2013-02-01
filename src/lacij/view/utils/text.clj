@@ -1,10 +1,10 @@
 ;;; Copyright © 2010-2011 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
-(ns lacij.view.svg.utils.text
+(ns lacij.view.utils.text
   (:use lacij.view.core
         lacij.utils.core
-        lacij.view.svg.utils.style)
+        lacij.view.utils.style)
   (:require [analemma.svg :as s]))
 
 (defn view-labels
@@ -14,10 +14,10 @@
               x-multi 0 y-multi 0 text-anchor-multi "start"}} options]
     (map (fn [label]
            ;; TODO: use the position indicator
-           (let [txt (text label)
-                 pos (position label)
-                 style (nodelabel-style label)
-                 font-size (or (:font-size (nodelabel-attrs label)) 12)
+           (let [txt (:text label)
+                 pos (:position label)
+                 style (:style label)
+                 font-size (or (:font-size (:attrs label)) 12)
                  ;; TODO support font size expressed in px
                  dy font-size
                  text (if (string? txt)

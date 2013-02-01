@@ -2,7 +2,7 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Utilities functions to manipulate styles and attributes."}
-  lacij.view.svg.utils.style
+  lacij.view.utils.style
   (:use clojure.pprint)
   (:require [analemma.svg :as s]
             [analemma.xml :as xml]))

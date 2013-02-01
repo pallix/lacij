@@ -1,15 +1,12 @@
 (ns lacij.examples.swing
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+  (:use lacij.edit.graph
         analemma.xml
         (tikkba swing dom)
-        tikkba.utils.xml
-        (lacij.view.svg rectnodeview circlenodeview))
+        tikkba.utils.xml)
   (:import (javax.swing JFrame SwingUtilities)))
 
 (defn -main []
-  (let [g (-> (create-graph)
+  (let [g (-> (graph)
               (add-node :athena "Athena" :x 10 :y 30)
               (add-node :zeus "Zeus" :x 200 :y 150)
               (add-node :hera "Hera" :x 500 :y 150)
@@ -21,7 +18,7 @@
               (add-edge :son-zeus-hera :ares :matrimony)
               (build))
         _ (Thread/sleep 1000) ;; wait for rendering, TODO: attach a listener instead
-        doc (view g)
+        doc (:xmldoc g)
         canvas (jsvgcanvas)
         frame (JFrame.)]
     (set-document canvas doc)

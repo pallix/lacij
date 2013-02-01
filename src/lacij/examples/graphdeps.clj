@@ -1,7 +1,7 @@
 (ns lacij.examples.graphdeps
   (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph
+        lacij.edit.graph
+        lacij.view.graphview
         (lacij.layouts core layout))
   (:import java.io.File))
 
@@ -74,7 +74,7 @@
 
 (defn build-svggraph
   [deps]
-  (-> (create-graph)
+  (-> (graph)
       (add-ns-names deps)
       (add-ns-links deps)
       (layout :hierarchical)

@@ -1,8 +1,8 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Protocol for the undo/redo mechanism"}
-  lacij.graph.svg.history)
+  lacij.model.history)
 
 (defprotocol History
   "A stack of states that can be undone or redone"
