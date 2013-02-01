@@ -1,4 +1,4 @@
-;;; Copyright © 2010 Fraunhofer Gesellschaft
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Hierarchical Layout.
@@ -13,6 +13,7 @@
         lacij.geom.intersect
         lacij.layouts.core
         lacij.model.graph
+        lacij.edit.graph
         lacij.view.core
         lacij.utils.core
         lacij.layouts.utils.position)

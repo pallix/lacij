@@ -1,4 +1,8 @@
-(ns lacij.edit.dynamic
+;;; Copyright © 2010-2013 Fraunhofer Gesellschaft
+;;; Licensed under the EPL V.1.0
+
+(ns ^{:doc "Dynamic modifications to the DOM operations."}
+  lacij.edit.dynamic
   (:use lacij.edit.graph
         lacij.view.core
         lacij.model.history
