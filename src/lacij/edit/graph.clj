@@ -131,29 +131,88 @@
   [this id src-id dst-id & params]
   (apply x-add-edge add-edge-kv this id src-id dst-id params))
 
+(defn add-label-kv
+ [graph id label params]
+ (cond ((:edges graph) id)
+       (let [edge ((:edges graph) id)
+             edgeview (:view edge)
+             edgeview (update-in edgeview [:labels] conj
+                                 (create-edgelabelview label :center (:style params)
+                                                       (dissoc params :style)))
+             edge (e/create-edge id edgeview (:src edge) (:dst edge))]
+         (update-in graph [:edges] assoc id edge))
+
+       ((:nodes) id)
+       (let [node ((:nodes graph) id)
+             nodeview (:view node)
+             nodeview (update-in nodeview [:labels] conj
+                                      (create-nodelabelview label :center
+                                                            (:style params)
+                                                            (dissoc params :style)))
+             node (n/create-node id nodeview)]
+         (update-in graph [:nodes] assoc id node))))
+
 ;; (defn add-edge!
 ;;   [this id src-id dst-id & params]
 ;;   (x-add-edge add-edge-kv! this id src-id dst-id params))
 
-;; (defn add-label
-;;   [this id label & params]
-;;   (add-label-kv this id label (apply hash-map params)))
+(defn add-label
+  [this id label & params]
+  (add-label-kv this id label (apply hash-map params)))
 
-;; (defn add-default-node-style
-;;   [this & params]
-;;   (add-default-node-style-kv this (apply hash-map params)))
+(defn add-default-node-style-kv
+ [graph node-styles]
+ (update-in graph [:node-styles] merge node-styles))
 
-;; (defn add-default-edge-style
-;;   [this & params]
-;;   (add-default-edge-style-kv this (apply hash-map params)))
+(defn add-default-node-style
+  [this & params]
+  (add-default-node-style-kv this (apply hash-map params)))
 
-;; (defn add-default-node-attrs
-;;   [this & params]
-;;   (add-default-node-attrs-kv this (apply hash-map params)))
+(defn add-default-edge-style-kv
+ [graph edge-styles]
+ (update-in graph [:edge-styles] merge edge-styles))
 
-;; (defn add-default-edge-attrs
-;;   [this & params]
-;;   (add-default-edge-attrs-kv this (apply hash-map params)))
+(defn add-default-edge-style
+  [this & params]
+  (add-default-edge-style-kv this (apply hash-map params)))
+
+(defn add-default-node-attrs-kv
+ [graph node-attrs]
+ (update-in graph [:node-attrs] merge node-attrs))
+
+(defn add-default-node-attrs
+  [this & params]
+  (add-default-node-attrs-kv this (apply hash-map params)))
+
+
+
+(defn add-default-edge-attrs-kv
+ [graph edge-attrs]
+ (update-in graph [:edge-attrs] merge edge-attrs))
+
+(defn add-def
+ [graph def]
+ (update-in graph [:defs] conj def))
+
+(defn add-decorator
+ [graph id decorator]
+ (let [view (:view ((:nodes graph) id))
+       view (update-in view [:decorators] conj decorator)
+       node (n/create-node id view)]
+   (update-in graph [:nodes] assoc id node)))
+
+(defn add-default-edge-attrs
+  [this & params]
+  (add-default-edge-attrs-kv this (apply hash-map params)))
+
+;; (defn add-listener-vec
+;;  [graph id type f args]
+;;  (if-let [el (dom/element-id xmldoc id)]
+;;    (do
+;;      (apply dom/add-event-listener el type f args)
+;;      (update-listeners graph id type f args)
+;;      graph)
+;;    graph))
 
 ;; (defn add-listener
 ;;   [this id type f & args]
@@ -162,7 +221,6 @@
 ;; (defn add-node-styles!
 ;;   [this id & params]
 ;;   (add-node-styles-kv! this id (apply hash-map params)))
-
 
 (defmacro do-update [graph & body]
   "Executes body inside an update"
@@ -189,55 +247,8 @@
                           (:outedges ((:nodes graph) n1))))]
    (remove-edge-by-id graph eid)))
 
-;; (defn add-label-kv
-;;  [graph id label params]
-;;  (cond (contains? edges id)
-;;        (let [edge (get edges id)
-;;              edgeview (edge-view edge)
-;;              edgeview (add-edge-label edgeview
-;;                                       (edgelabelview label :center (:style params)
-;;                                                      (dissoc params :style)))
-;;              edge (svgedge id edgeview (src edge) (dst edge))]
-;;          (update-in graph [:edges] assoc id edge))
-
-;;        (contains? nodes id)
-;;        (let [node (get nodes id)
-;;              nodeview (node-view node)
-;;              nodeview (add-node-label nodeview
-;;                                       (nodelabelview label :center
-;;                                                      (:style params)
-;;                                                      (dissoc params :style)))
-;;              node (svgnode id nodeview)]
-;;          (update-in graph [:nodes] assoc id node))))
-
-;; (defn add-default-node-style-kv
-;;  [graph node-styles]
-;;  (update-in graph [:node-styles] merge node-styles))
-
-;; (defn add-default-node-attrs-kv
-;;  [graph node-attrs]
-;;  (update-in graph [:node-attrs] merge node-attrs))
-
-;; (defn add-default-edge-style-kv
-;;  [graph edge-styles]
-;;  (update-in graph [:edge-styles] merge edge-styles))
-
-;; (defn add-default-edge-attrs-kv
-;;  [graph edge-attrs]
-;;  (update-in graph [:edge-attrs] merge edge-attrs))
-
-;; (defn add-def
-;;  [graph def]
-;;  (update-in graph [:defs] conj def))
-
-;; (defn add-decorator
-;;  [graph id decorator]
-;;  (let [view (node-view (node graph id))
-;;        view (add-node-decorator view decorator)
-;;        node (svgnode id view)]
-;;    (update-in graph [:nodes] assoc id node)))
-
 (defn build
+  "Builds graph representation by modifying the DOM tree."
   [graph]
   (view-graph (:view graph) graph {:defs (:defs graph)
                                    :doc (:xmldoc graph)
@@ -287,14 +298,6 @@
        desty (+ y ydelta)]
    (move-node graph id destx desty)))
 
-;; (defn add-listener-vec
-;;  [graph id type f args]
-;;  (if-let [el (dom/element-id xmldoc id)]
-;;    (do
-;;      (apply dom/add-event-listener el type f args)
-;;      (update-listeners graph id type f args)
-;;      graph)
-;;    graph))
 
 ;; (defn add-node-kv!
 ;;  [graph id params]

@@ -1,10 +1,9 @@
 (ns lacij.examples.circle
-  (:use clojure.pprint
-        lacij.graph.core
-        lacij.graph.svg.graph))
+  (:use lacij.edit.graph
+        lacij.view.graphview))
 
 (defn -main []
-  (-> (create-graph)
+  (-> (graph)
       (add-node :athena "Athena" :x 10 :y 30)
       (add-node :zeus "Zeus" :x 200 :y 150)
       (add-node :hera "Hera" :x 500 :y 150)
