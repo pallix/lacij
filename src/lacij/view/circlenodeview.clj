@@ -14,13 +14,7 @@
             [tikkba.utils.dom :as dom])
   (:import java.lang.Math))
 
-
-
-;; TODO calculate width and height when creating this record
-;; also calculates center
-;; (node-center
-   ;; [this]
-   ;; [(+ x radius) (+ y radius)])
+ 
 (defrecord CircleNodeView
     [id
      x
@@ -52,9 +46,13 @@
                      decorations)]
      (dom/elements doc svg-ns xml)))
 
+  (center
+    [this]
+    [(+ x radius) (+ y radius)])
+
   (ports
    [this]
-    (let [[xcenter ycenter] (:center this)]
+    (let [[xcenter ycenter] (center this)]
      (map (fn [angle]
             (let [ra (Math/toRadians angle)]
               [(double (+ xcenter (* radius (Math/cos ra))))

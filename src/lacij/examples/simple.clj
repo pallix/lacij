@@ -1,10 +1,9 @@
 (ns lacij.examples.simple
-  (:use lacij.model.graph
-        lacij.edit.graph
+  (:use lacij.edit.graph
         lacij.view.graphview))
 
 (defn -main []
-  (let [g (-> (create-graph :width 400 :height 400)
+  (let [g (-> (graph :width 400 :height 400)
               (add-node :hermes "Hermes" :x 10 :y 30)
               (add-node :zeus "Zeus" :x 200 :y 125)
               (add-node :ares "Ares" :x 200 :y 225)

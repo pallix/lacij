@@ -97,8 +97,8 @@
          src-ports (ports src-view)
          dst-view (:view ((:nodes graph) (:dst edge)))
          dst-ports (ports dst-view)
-         [x1-line y1-line] (:center src-view)
-         [x2-line y2-line] (:center dst-view)
+         [x1-line y1-line] (center src-view)
+         [x2-line y2-line] (center dst-view)
          shortest-dist (first
                         (sort-by
                          :dist

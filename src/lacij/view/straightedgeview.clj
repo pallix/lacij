@@ -56,10 +56,8 @@
            src-ports (ports src-view)
            dst-view (:view ((:nodes graph) (:dst edge)))
            dst-ports (ports dst-view)
-           _ (prn "src-ports=" src-ports)
-           _ (prn "dst-ports=" dst-ports)
-           [x1 y1] (:center src-view)
-           [x2 y2] (:center dst-view)
+           [x1 y1] (center src-view)
+           [x2 y2] (center dst-view)
            dists
            (sort-by
             :dist

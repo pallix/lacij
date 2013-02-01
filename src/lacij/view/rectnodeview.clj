@@ -20,7 +20,6 @@
     [id
      x
      y
-     center
      width
      height
      labels
@@ -33,7 +32,7 @@
   (view-node
    [this node context]
     (let [{:keys [doc]} context
-          [x-center y-center] (:center this)
+          [x-center y-center] (center this)
           texts (view-labels labels {:x (by-two width)
                                      :y (by-two height)
                                      :xmargin 5
@@ -51,6 +50,11 @@
       ;; (pprint xml)
       (dom/elements doc svg-ns xml)))
 
+  (center
+    [this]
+    [(double (+ x (by-two width)))
+     (double (+ y (by-two height)))])
+
   (ports
    [this]
    [[x y] [(double (+ x (by-two width))) y] [(+ x width) y]
@@ -66,14 +70,9 @@
    (let [margin 5]
      [(- x margin) (- y margin) (+ width (* 2 margin)) (+ height (* 2 margin))])))
 
-(defn center
-  [x y width height]
-  [(double (+ x (by-two width)))
-   (double (+ y (by-two height)))])
-
 (defn create-rectnodeview
   [id x y width height labels default-style style attrs decorators]
-  (RectNodeView. id x y (center x y width height) 
+  (RectNodeView. id x y
                  width height [] default-style style attrs #{}))
 
 (defn import-rect
@@ -85,5 +84,5 @@
         height (Double/parseDouble height)
         attrs (dissoc attrs :width :height :style :x :y :id)
         style (s/parse-inline-css style)]
-    (RectNodeView. id x y (center x y width height)
+    (RectNodeView. id x y
                    width height [] {} style attrs #{})))

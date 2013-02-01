@@ -5,6 +5,7 @@
   lacij.view.core)
 
 (defprotocol NodeView
+  (center [this])
   (view-node [this node context])
   (ports [this] "Returns the ports. Ports are points where the edges connections occurs.")
   (contains-pt? [this x y])

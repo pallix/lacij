@@ -38,6 +38,10 @@
          node-view (add-view-label node-view (create-nodelabelview label :center))]
     [(n/create-node id node-view) node-view]))
 
+(defn graph
+  [& args]
+  (apply g/create-graph args))
+
 (defn add-node-kv
  [graph id params]
  (let [[node _] (create-node id
@@ -246,10 +250,6 @@
   ;; set initial state:
   ;; (swap! history add-state (graphstate graph))
   graph)
-
-;; (defn export-kv
-;;  [graph filename options]
-;;  (g/export-graph graphview graph filename {:defs defs} options))
 
 (defn set-node-view-factory
  [graph f]
