@@ -72,8 +72,6 @@
   [this id type f & args]
   (add-listener-vec this id type f args))
 
-
-
 (defn- replace-node
   [graph id new-node new-el]
   (let [xmldoc (:xmldoc graph)
@@ -116,7 +114,7 @@
  [graph id styles]
  (if-let [node ((:nodes graph) id)]
    (let [nodeview (:view node)
-         nodeview (assoc nodeview :styles styles)
+         nodeview (update-in nodeview [:style] merge styles)
          node (n/create-node id nodeview)
          node-element (view-node nodeview node {:doc (:xmldoc graph)})
          [graph edit] (replace-node graph id node node-element)]
@@ -130,9 +128,9 @@
 
 (defn add-edge-kv!
  [graph id id-node-src id-node-dst params]
- (let [[edge edgeview] (e/create-edge id params id-node-src id-node-dst
-                                      (:edge-styles graph)
-                                      (:edge-attrs graph))
+ (let [[edge edgeview] (create-edge id params id-node-src id-node-dst
+                                    (:edge-styles graph)
+                                    (:edge-attrs graph))
        edge-element (view-edge edgeview graph edge {:doc (:xmldoc graph)})
        docel (dom/document-element (:xmldoc graph))
        edit (node-inserted-edit docel nil edge-element)

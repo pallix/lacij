@@ -71,8 +71,8 @@ Returns the listener."
 
 (defn on-click-listener
   [event]
-  (let [g (deref *graph*)
-        svgcanvas (:svgcanvas g)]
+  (prn "event")
+  (let [g (deref *graph*)]
     (do-batik-update
      g
      (let [g (add-node-styles! g :clickme :fill (random-color))]
