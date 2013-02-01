@@ -47,7 +47,7 @@
 (defn- longest-path-layering
   [context]
   (let [graph (:graph context)
-        sorted (sort (vals (:nodes graph)))
+        sorted (sort (keys (:nodes graph)))
         topology (topological-seq (constantly true) #(in-children graph %)
                                   (first sorted) sorted)
         layers (reduce (fn [layers n]
@@ -111,7 +111,10 @@
   (let [{:keys [layers dummy-graph]} context
         {:keys [layer-to-node]} layers
         nodes (get layer-to-node (dec layeru))
+        _ (prn "u =" u)
         vs (out-children dummy-graph u)
+        _ (prn "vs =" vs)
+        _ (prn "nodes =" nodes)
         val (/ (apply + (map #(index-of nodes %) vs)) (count vs))]
     ;; (printf "u = %s (%s) nodes = %s vs = %s => %s\n" u layeru nodes vs val)
     val

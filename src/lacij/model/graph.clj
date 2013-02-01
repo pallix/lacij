@@ -75,13 +75,13 @@
   "Returns all src nodes of all in-edges for the node nid."
   [graph nid]
   (let [node ((:nodes graph) nid)]
-    (concat (map #(:src ((:edges graph) %)) (:inedges node)))))
+    (map #(:src ((:edges graph) %)) (:inedges node))))
 
 (defn out-children
   "Returns all dst nodes of all out-edges for the node nid."
   [graph nid]
   (let [node ((:nodes graph) nid)]
-    (concat (map #(:dst ((:edges graph) %)) (:outedges node)))))
+    (map #(:dst ((:edges graph) %)) (:outedges node))))
 
 (defn inout-children
   "Returns all src nodes of all inout-edges for the node nid."
@@ -93,7 +93,7 @@
   "Returns a seq of the roots of the graph. The roots are the node
    with the minimum of out-edges"
   [graph]
-  (let [allnodes (:keys (:nodes graph))
+  (let [allnodes (keys (:nodes graph))
         fnode (first allnodes)]
     (first
      (reduce

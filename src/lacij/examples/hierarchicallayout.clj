@@ -1,8 +1,8 @@
 (ns lacij.examples.hierarchicallayout
   (:use clojure.pprint
         lacij.layouts.layout
-        lacij.graph.core
-        lacij.graph.svg.graph))
+        lacij.edit.graph
+        lacij.view.graphview))
 
 
 (defn add-nodes [g & nodes]
@@ -21,7 +21,7 @@
 
 (defn gen-graph
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-node :jacket "jacket")
       (add-node :tie "tie")
       (add-node :belt "belt")
@@ -42,7 +42,7 @@
 
 (defn gen-graph2
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-edges [:a :b] [:a :d3]
                  [:b :c] [:b :e4]
                  [:c :d1] [:c :d2]
@@ -66,7 +66,7 @@
 
 (defn gen-graph4
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-edges [:a1 :p]
                  [:pr :a1]
                  [:po :a1]

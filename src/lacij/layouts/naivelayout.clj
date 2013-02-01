@@ -30,8 +30,6 @@
 (defn x-nodesviews
   [graph]
   (let [allnodes (vals (:nodes graph))]
-    (prn "all nodes =")
-    (pprint allnodes)
     (for [n1 allnodes
           n2 allnodes
           :when (not= n1 n2)]
@@ -56,7 +54,6 @@
   "Returns the number of overlaps between nodes"
   [graph nodesviews-couples]
   (reduce (fn [noverlaps couple]
-            (prn "couple =" couple)
             (if (apply rect-intersects? (mapcat bounding-box couple))
               (inc noverlaps)
               noverlaps))
