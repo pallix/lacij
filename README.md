@@ -16,7 +16,7 @@ The easiest way to use Lacij in your own projects is via
 [Leiningen](http://github.com/technomancy/leiningen). Add the following
 dependency to your project.clj file:
 
-    [lacij "0.8.0"]
+    [lacij "0.8.1"]
     
     
 ## Usage
