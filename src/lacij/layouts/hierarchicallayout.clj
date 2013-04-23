@@ -430,15 +430,13 @@
         context (assign-default-coordinates context)
         context (assign-updown-priorities context)
         context (-> context
-                     (downward-iter2)
-                     (downward-iter2)
-                     (downward-iter2)
-                     (downward-iter2)
-                     (upward-iter2)
-                     (upward-iter2)
-                     (downward-iter2)
-                     (downward-iter2))
-        ]
+                    (downward-iter2)
+                    (downward-iter2)
+                    (downward-iter2)
+                    (upward-iter2)
+                    (upward-iter2)
+                    ) 
+                    ]
     (-> context
         (update-in [:dummy-graph] make-graph-visible)
         (update-in [:dummy-graph] adjust-size))))
