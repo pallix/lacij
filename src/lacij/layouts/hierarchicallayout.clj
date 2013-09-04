@@ -54,7 +54,7 @@
                   :removed #{}}]
       (if (empty? (:s state))
         (if-not (= (:removed state) (set (keys (:edges graph))))
-          (throw (ex-info "Aclyclic graph are not allowed" {}))
+          (throw (ex-info "Acyclic graph are not allowed" {}))
           (reverse (:l state)))
         (let [[node & remaining] (:s state)]
           (let [state (assoc state :s remaining)
