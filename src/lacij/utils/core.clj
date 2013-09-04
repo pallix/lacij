@@ -45,27 +45,6 @@
                        (recur restnodes visited visited-nodes))))]
      (walk [root] #{} [])))
 
-(defn topological-seq
-  "Returns a topological sort of the nodes in the graph"
-  [branch? children root allnodes]
-  (let [walk (fn walk [node tovisit visited]
-               (if (contains? tovisit node)
-                 ;; not visited yet
-                 (let [[tovisit visited]
-                       (reduce (fn [[tovisit visited] n]
-                                 (walk n tovisit visited))
-                               [tovisit visited]
-                               (when (branch? node)
-                                 (children node)))]
-                   [(disj tovisit node) (conj visited node)])
-                 [tovisit visited]))]
-    (loop [[tovisit visited] (walk root (set allnodes) [])]
-      (if (seq tovisit)
-        ;; continues the process on nodes that were not reachable
-        ;; from the original root
-        (recur (walk (first tovisit) tovisit visited))
-        visited))))
-
 (defn divide
   "Divides the collection into two collections of the same number of elements,
    with the same order. If the number of elements in the collection is odd
