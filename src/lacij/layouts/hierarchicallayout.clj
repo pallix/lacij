@@ -2,7 +2,7 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Hierarchical Layout.
-           
+
             Implementation based on:
 
             How to draw a directed graph by Peter Eades, Kozo Sugiyama
@@ -17,7 +17,7 @@
         lacij.view.core
         lacij.utils.core
         lacij.layouts.utils.position)
-  (:require clojure.set))
+  (:require [clojure.set :as set]))
 
 (defn- get-layer
   [n layers]
@@ -44,12 +44,40 @@
           layers
           (in-children graph n)))
 
+(defn topological-seq
+  "Returns a topological sort of the nodes in the graph"
+  [graph]
+  ;; see https://en.wikipedia.org/wiki/Topological_sorting
+  (let [s (filter (fn [n] (empty? (in-children graph n))) (keys (:nodes graph)))]
+    (loop [state {:s s
+                  :l []
+                  :removed #{}}]
+      (if (empty? s)
+        (reverse (:l state))
+        (let [[node & remaining] (:s state)]
+          (if (nil? node)
+            (reverse (:l state))
+            (let [state (assoc state :s remaining)
+                  state (assoc state :l (cons node (:l state)))
+                  outedges (set/difference (set (:outedges ((:nodes graph) node)))
+                                           (:removed state))
+                  state (reduce (fn [state edge]
+                                  (let [state (update-in state [:removed] conj edge)
+                                        dst (:dst ((:edges graph) edge))
+                                        incoming (:inedges ((:nodes graph) dst))
+                                        incoming (set/difference (set incoming) (:removed state))]
+                                    (if (empty? incoming)
+                                      (assoc state :s (cons dst (:s state)))
+                                      state)))
+                                state
+                                outedges)]
+              (recur state))))))))
+
 (defn- longest-path-layering
   [context]
   (let [graph (:graph context)
         sorted (sort (keys (:nodes graph)))
-        topology (topological-seq (constantly true) #(in-children graph %)
-                                  (first sorted) sorted)
+        topology (topological-seq graph)
         layers (reduce (fn [layers n]
                          (update-layers graph n layers))
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
@@ -87,7 +115,7 @@
         [n & nextnodes] tovisit]
     (if (nil? n)
       context
-      (let [[context nextnodes] 
+      (let [[context nextnodes]
             (reduce (fn [[context nextnodes] u]
                       (let [{:keys [layers]} context
                             sp (span u n layers)]
@@ -183,7 +211,7 @@
         [up down] (divide ycoords)]
     (cond (empty? up)
           (second (center (:view ((:nodes dummy-graph) n))))
-          
+
           (= (count up) (count down))
           (int (/ (+ (last up) (first down)) 2))
 
@@ -435,7 +463,7 @@
                     (downward-iter2)
                     (upward-iter2)
                     (upward-iter2)
-                    ) 
+                    )
                     ]
     (-> context
         (update-in [:dummy-graph] make-graph-visible)
@@ -445,7 +473,7 @@
   "Places nodes in the graph according to their positions in the dummy graph"
   [context]
   (let [{:keys [dummy-graph dummy-nodes graph]} context
-        graph 
+        graph
         (reduce (fn [graph nid]
                   (if ((:nodes graph) nid)
                     (let [view (:view ((:nodes dummy-graph) nid))
@@ -525,7 +553,7 @@
 (defrecord HierarchicalLayout
     []
   Layout
-  
+
   (layout-graph
     ;; Available options are :layer-space and :inlayer-space
    [this graph options]
@@ -551,4 +579,3 @@
 
 (defn hierarchicallayout []
   (HierarchicalLayout.))
-
