@@ -52,26 +52,26 @@
     (loop [state {:s s
                   :l []
                   :removed #{}}]
-      (if (empty? s)
-        (reverse (:l state))
+      (if (empty? (:s state))
+        (if-not (= (:removed state) (set (keys (:edges graph))))
+          (throw (ex-info "Aclyclic graph are not allowed" {}))
+          (reverse (:l state)))
         (let [[node & remaining] (:s state)]
-          (if (nil? node)
-            (reverse (:l state))
-            (let [state (assoc state :s remaining)
-                  state (assoc state :l (cons node (:l state)))
-                  outedges (set/difference (set (:outedges ((:nodes graph) node)))
-                                           (:removed state))
-                  state (reduce (fn [state edge]
-                                  (let [state (update-in state [:removed] conj edge)
-                                        dst (:dst ((:edges graph) edge))
-                                        incoming (:inedges ((:nodes graph) dst))
-                                        incoming (set/difference (set incoming) (:removed state))]
-                                    (if (empty? incoming)
-                                      (assoc state :s (cons dst (:s state)))
-                                      state)))
-                                state
-                                outedges)]
-              (recur state))))))))
+          (let [state (assoc state :s remaining)
+                state (assoc state :l (cons node (:l state)))
+                outedges (set/difference (set (:outedges ((:nodes graph) node)))
+                                         (:removed state))
+                state (reduce (fn [state edge]
+                                (let [state (update-in state [:removed] conj edge)
+                                      dst (:dst ((:edges graph) edge))
+                                      incoming (:inedges ((:nodes graph) dst))
+                                      incoming (set/difference (set incoming) (:removed state))]
+                                  (if (empty? incoming)
+                                    (update-in state [:s] conj dst)
+                                    state)))
+                              state
+                              outedges)]
+            (recur state)))))))
 
 (defn- longest-path-layering
   [context]
@@ -83,12 +83,18 @@
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
                         :layer-to-node (sorted-map)}
                        (reverse topology))]
+    (prn "count nodes  " (count (keys (:nodes graph))))
+    (prn "sorted nodes  " (count topology))
+    (pprint (keys (:nodes graph)))
+    (pprint layers)
     (assoc context :layers layers)))
 
 (defn- span
   [n1 n2 layers]
   (let [l1 (get-layer n1 layers)
         l2 (get-layer n2 layers)]
+    (prn "n1" n1)
+    (prn "n2" n2)
     (- l2 l1)))
 
 (defn- add-dummy-node
