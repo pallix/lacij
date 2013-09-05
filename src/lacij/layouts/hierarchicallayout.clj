@@ -83,18 +83,12 @@
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
                         :layer-to-node (sorted-map)}
                        (reverse topology))]
-    (prn "count nodes  " (count (keys (:nodes graph))))
-    (prn "sorted nodes  " (count topology))
-    (pprint (keys (:nodes graph)))
-    (pprint layers)
     (assoc context :layers layers)))
 
 (defn- span
   [n1 n2 layers]
   (let [l1 (get-layer n1 layers)
         l2 (get-layer n2 layers)]
-    (prn "n1" n1)
-    (prn "n2" n2)
     (- l2 l1)))
 
 (defn- add-dummy-node
