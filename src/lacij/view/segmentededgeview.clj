@@ -37,7 +37,7 @@
   [line marker attrs]
   (cond (= ::not-found marker)
         (xml/add-attrs line :marker-end "url(#lacij-end-arrow-marker)")
-        
+
         (nil? marker)
         line
 
@@ -49,7 +49,7 @@
   (let [marker (get attrs :marker-end ::not-found)
         attrs2 (dissoc attrs :marker-end)
         default {:stroke "#000000" :stroke-width 1}]
-   (if (empty? points)
+    (if (empty? points)
      (-> (s/line xsrc ysrc xdst ydst)
          (add-marker marker attrs)
          (apply-styles default style)
@@ -64,7 +64,7 @@
         (-> (s/line lastx lasty xdst ydst)
             (add-marker marker attrs)
             (apply-styles default style)
-            (apply-attrs attrs2)))))))
+            (apply-attrs (dissoc attrs2 :marker-start))))))))
 
 (defrecord SegmentedEdgeView
     [labels style attrs points]
