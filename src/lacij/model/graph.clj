@@ -94,14 +94,19 @@
    with the minimum of out-edges"
   [graph]
   (let [allnodes (keys (:nodes graph))
-        fnode (first allnodes)]
-    (first
+        fnode (first allnodes)
+        min (count (:outedges ((:nodes graph) fnode)))]
+    (:roots
      (reduce
-      (fn [[rootids noutedges] nodeid]
+      (fn [{:keys [roots min] :as m} nodeid]
         (let [out (count (:outedges ((:nodes graph) nodeid)))]
-          (cond (< out noutedges) [[nodeid] out] ;; fewer out-edges than the current roots? discard them
-                (= out noutedges) [(conj rootids nodeid) noutedges] ;; the same number, add it
-                :else [rootids noutedges])))
-      [[fnode] (count (:outedges ((:nodes graph) fnode)))]
+          (cond
+           ;; fewer out-edges than the current roots? discard them
+           (< out min) (assoc m :roots #{nodeid} :min out)
+           ;; the same number, add it (we have multiple roots)
+           (= out min) (update-in m [:roots] conj nodeid)
+           :else
+           m)))
+      {:roots #{fnode}
+       :min min}
       allnodes))))
-
