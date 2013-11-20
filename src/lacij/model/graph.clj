@@ -93,20 +93,23 @@
   "Returns a seq of the roots of the graph. The roots are the node
    with the minimum of out-edges"
   [graph]
-  (let [allnodes (keys (:nodes graph))
-        fnode (first allnodes)
-        min (count (:outedges ((:nodes graph) fnode)))]
-    (:roots
-     (reduce
-      (fn [{:keys [roots min] :as m} nodeid]
-        (let [out (count (:outedges ((:nodes graph) nodeid)))]
-          (cond
-           ;; fewer out-edges than the current roots? discard them
-           (< out min) (assoc m :roots #{nodeid} :min out)
-           ;; the same number, add it (we have multiple roots)
-           (= out min) (update-in m [:roots] conj nodeid)
-           :else
-           m)))
-      {:roots #{fnode}
-       :min min}
-      allnodes))))
+  (let [nout (fn [node] (count (:outedges ((:nodes graph) node))))
+        allnodes (keys (:nodes graph))
+        fnode (first (filter #(pos? (nout %)) allnodes))
+        min (nout fnode)]
+    (if-not fnode
+      ()
+      (seq (:roots
+            (reduce
+             (fn [{:keys [roots min] :as m} nodeid]
+               (let [out (nout nodeid)]
+                 (cond
+                  ;; fewer out-edges than the current roots? discard them
+                  (and (< out min) (pos? out)) (assoc m :roots #{nodeid} :min out)
+                  ;; the same number, add it (we have multiple roots)
+                  (= out min) (update-in m [:roots] conj nodeid)
+                  :else
+                  m)))
+             {:roots #{fnode}
+              :min min}
+             allnodes))))))
