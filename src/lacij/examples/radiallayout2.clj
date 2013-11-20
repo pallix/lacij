@@ -1,8 +1,7 @@
 (ns lacij.examples.radiallayout2
-  (:use clojure.pprint
-        lacij.layouts.layout
-        lacij.graph.core
-        lacij.graph.svg.graph))
+  (:require [lacij.edit.graph :refer :all]
+            [lacij.layouts.layout :refer :all]
+            [lacij.view.graphview :refer [export]]))
 
 (defn add-nodes [g & nodes]
   (reduce (fn [g node]
@@ -20,7 +19,7 @@
 
 (defn gen-graph
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-edges [:a :b] [:a :d3]
                  [:b :c] [:b :e4]
                  [:c :d1] [:c :d2]
@@ -44,7 +43,7 @@
 
 (defn gen-graph2
   []
-  (-> (create-graph)
+  (-> (graph)
       (add-edges [:s1 :r1]
                  [:s1 :r2]
                  [:t1 :s1])))
@@ -55,4 +54,3 @@
               (layout :radial)
               (build))]
     (export g "/tmp/radial2.svg" :indent "yes")))
-
