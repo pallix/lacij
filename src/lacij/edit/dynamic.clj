@@ -16,7 +16,8 @@
         [tikkba.apps.svgbrowser :only [node-inserted-edit
                                        node-removed-edit
                                        compound-edit
-                                       post-edit]])
+                                       post-edit]]
+        [tikkba.utils.selection :as sel])
   (:require [lacij.model.node :as n]
             [lacij.model.edge :as e]
             [tikkba.utils.dom :as dom]))
@@ -194,3 +195,28 @@
                                        current-selected)]
    (swap! (:history graph) update-current-state (:graphstate graph))
    graph))
+
+(defn clean!
+  [graph]
+  (let [root (.getDocumentElement (:xmldoc graph))]
+    (doseq [node (dom/child-nodes-seq root)]
+      (dom/remove-child root node))))
+
+
+(defn autobox-texts!
+  [graph]
+  (let [groups (sel/selection-seq
+                (.getDocumentElement
+                 (:xmldoc graph))
+                "g[class=rectangle-node]")
+        graph (reduce (fn [graph g]
+                        (let [box (.getBBox g)
+                              id (keyword (.getId g))
+                              width (Math/ceil (.getWidth box))
+                              height (Math/ceil (.getHeight box))]
+                          (update-node graph id :width width :height height)))
+                      graph
+                      groups)]
+    (clean! graph)
+    (add-node-kv! graph :xyz {:x 100 :y 100 :width 40 :height 40 :style {:fill "black"}})
+    (build graph)))

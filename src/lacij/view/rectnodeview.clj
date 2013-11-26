@@ -34,12 +34,14 @@
           [x-center y-center] (center this)
           texts (view-labels labels {:x (by-two width)
                                      :y (by-two height)
-                                     :xmargin 5
+                                     :xmargin 0
                                      :text-anchor "middle"
                                      :text-anchor-multi "start"})
           decorations (map #(decorate % this context) decorators)
           xml (concat (s/group
-                       {:id (name id) :transform (format "translate(%s, %s)" x y)}
+                       {:id (name id)
+                        :transform (format "translate(%s, %s)" x y)
+                        :class "rectangle-node"}
                        (-> [:rect {:height height :width width}]
                            (apply-styles default-style style)
                            (apply-attrs attrs)))
@@ -59,7 +61,7 @@
    [[x y] [(double (+ x (by-two width))) y] [(+ x width) y]
     [x (double (+ y (by-two height)))] [(+ x width) (double (+ y (by-two height)))]
     [x (+ y height)] [(double (+ x (by-two width))) (+ y height)] [(+ x width) (+ y height)]])
-  
+
   (contains-pt?
    [this x y]
    (.contains (Rectangle. (:x this) (:y this) width height) x y))

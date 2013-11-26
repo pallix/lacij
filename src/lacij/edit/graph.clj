@@ -2,7 +2,8 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns lacij.edit.graph
-  (:use [lacij.view.graphview :only [view-graph]]
+  (:use [clojure.pprint :refer [pprint]]
+        [lacij.view.graphview :only [view-graph]]
         [lacij.model.history :only [add-state]]
         [lacij.view.nodeview :only [create-nodeview]]
         [lacij.view.straightedgeview :only [create-straight-edgeview]]
@@ -11,7 +12,9 @@
         [lacij.view.core :only [add-view-label]]
         [lacij.view.nodelabelview :only [create-nodelabelview]]
         [tikkba.core :only [do-batik]]
-        [tikkba.swing :only [set-document]])
+        [tikkba.swing :only [set-document
+                             add-svg-load-event-dispatch-started-listener
+                             remove-svg-load-event-dispatch-started-listener]])
   (:require [lacij.model.graph :as g]
             [lacij.model.node :as n]
             [lacij.model.edge :as e]))
@@ -46,7 +49,8 @@
   (apply g/create-graph args))
 
 (defn add-node-kv
- [graph id params]
+  [graph id params]
+  {:pre [(not (nil? id))]}
  (let [[node _] (create-node id
                              params
                              (:node-styles graph)
@@ -80,8 +84,8 @@
    (update-in graph [:edges] assoc id edge)))
 
 (defn add-segmented-edge-kv
- [graph id id-node-src id-node-dst params points]
- (let [{:keys [label style]} params
+  [graph id id-node-src id-node-dst params points]
+  (let [{:keys [label style]} params
        rest-params (dissoc params :label :style)
        edgeattrs (merge (:edge-attrs graph) rest-params)
        edgeview (create-segmented-edgeview (merge (:edge-styles graph) style)
@@ -99,7 +103,7 @@
    (empty? params)
    (f this id {})
 
-   (keyword? (first params)) 
+   (keyword? (first params))
    (f this id (merge {:label (name id) :x 0 :y 0}
                      (apply hash-map params)))
 
@@ -110,6 +114,7 @@
 
 (defn add-node
   [this id & params]
+  {:pre [(not (nil? id))]}
   (apply x-add-node add-node-kv this id params))
 
 (defn x-add-edge
@@ -179,8 +184,6 @@
   [this & params]
   (add-default-node-attrs-kv this (apply hash-map params)))
 
-
-
 (defn add-default-edge-attrs-kv
  [graph edge-attrs]
  (update-in graph [:edge-attrs] merge edge-attrs))
@@ -202,6 +205,7 @@
 
 (defn remove-edge-by-id
   [graph id]
+  {:pre [((:edges graph) id)]}
   (let [e ((:edges graph) id)
         s (:src e)
         d (:dst e)
@@ -210,24 +214,39 @@
         graph (update-in graph [:nodes d :inedges] disj id)]
     graph))
 
+(defn get-edge-id
+  [graph n1 n2]
+  (first (filter #(= (:dst ((:edges graph) %)) n2)
+                 (:outedges ((:nodes graph) n1)))))
+
 (defn remove-edge
- [graph n1 n2]
- (let [eid (first (filter #(= (:dst ((:edges graph) %)) n2)
-                          (:outedges ((:nodes graph) n1))))]
-   (remove-edge-by-id graph eid)))
+  [graph n1 n2]
+  (let [eid (get-edge-id graph n1 n2)]
+    (remove-edge-by-id graph eid)))
 
 (defn build
-  "Builds graph representation by modifying the DOM tree."
-  [graph]
+  "Builds the graph representation by modifying the DOM tree. An optional :after
+keyword argument can be used to specify a function which will be called when the
+build is finished."
+  [graph & {after :after}]
   (view-graph (:view graph) graph {:defs (:defs graph)
                                    :doc (:xmldoc graph)
                                    :width (:width graph)
                                    :height (:height graph)
                                    :viewBox (:viewBox graph)})
-   (set-document (:svgcanvas graph) (:xmldoc graph))
-  ;; set initial state:
-   (swap! (:history graph) add-state (:graphstate graph))
-  graph)
+  (let [listener (atom nil)]
+    (when (fn? after)
+      (reset! listener (add-svg-load-event-dispatch-started-listener
+                        (:svgcanvas graph)
+                        (fn [event]
+                          (after graph)
+                          (remove-svg-load-event-dispatch-started-listener
+                           (:svgcanvas graph)
+                           @listener)))))
+    (set-document (:svgcanvas graph) (:xmldoc graph))
+    ;; set initial state:
+    (swap! (:history graph) add-state (:graphstate graph))
+    graph))
 
 (defn set-node-view-factory
  [graph f]
@@ -252,6 +271,15 @@
        new-view (assoc current-view :x x :y y)
        node (assoc node :view new-view)]
    (update-in graph [:nodes] assoc id node)))
+
+(defn update-node
+  [graph id & {:as attrs}]
+  {:pre [((:nodes graph) id)]}
+  (let [node ((:nodes graph) id)
+        current-view (:view node)
+        new-view (merge current-view attrs)
+        node (assoc node :view new-view)]
+    (update-in graph [:nodes] assoc id node)))
 
 (defn move-node-center
  [graph id x y]

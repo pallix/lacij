@@ -18,13 +18,20 @@
                  pos (:position label)
                  style (:style label)
                  font-size (or (:font-size (:attrs label)) 12)
+                 font-family (or (:font-family (:attrs label)) "verdana")
                  ;; TODO support font size expressed in px
                  dy font-size
                  text (if (string? txt)
-                        (s/text {:x x :y y :text-anchor text-anchor
-                                 :font-size font-size} txt)
+                        (s/text {:x x :y y
+                                 :text-anchor text-anchor
+                                 :font-size "12px"
+                                 :font-family font-family}
+                                txt)
                         (apply s/text {:text-anchor text-anchor-multi
-                                       :font-size font-size :x x-multi :y y-multi}
+                                       :font-size "12px"
+                                       :font-family font-family
+                                       :x x-multi
+                                       :y y-multi}
                                (map (fn [s]
                                       (s/tspan {:dy dy :x xmargin} s))
                                     txt)))]

@@ -14,7 +14,7 @@
             [tikkba.utils.dom :as dom])
   (:import java.lang.Math))
 
- 
+
 (defrecord CircleNodeView
     [id
      x
@@ -40,7 +40,9 @@
                                     :xmargin radius})
          decorations (map #(decorate % this context) decorators)
          xml (concat (s/group
-                      {:id (name id) :transform (format "translate(%s, %s)" x y)}
+                      {:id (name id)
+                       :transform (format "translate(%s, %s)" x y)
+                       :class "circle-node"}
                       (-> [:circle {:r radius :cx radius :cy radius}]
                           (apply-styles default-style style)
                           (apply-attrs attrs)))
