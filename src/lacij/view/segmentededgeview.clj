@@ -48,6 +48,7 @@
   [xsrc ysrc xdst ydst points style attrs]
   (let [marker (get attrs :marker-end ::not-found)
         attrs2 (dissoc attrs :marker-end)
+        style2 (dissoc style :marker-end)
         default {:stroke "#000000" :stroke-width 1}]
     (if (empty? points)
      (-> (s/line xsrc ysrc xdst ydst)
@@ -57,9 +58,12 @@
      (let [p (build-path xsrc ysrc xdst ydst points)
            lastx (first (last points))
            lasty (second (last points))]
+       (pprint (-> (s/path p)
+                   (apply-styles default style)
+                   (apply-attrs attrs2)))
        (s/group
         (-> (s/path p)
-            (apply-styles default style)
+            (apply-styles default style2)
             (apply-attrs attrs2))
         (-> (s/line lastx lasty xdst ydst)
             (add-marker marker attrs)
