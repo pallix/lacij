@@ -58,9 +58,6 @@
      (let [p (build-path xsrc ysrc xdst ydst points)
            lastx (first (last points))
            lasty (second (last points))]
-       (pprint (-> (s/path p)
-                   (apply-styles default style)
-                   (apply-attrs attrs2)))
        (s/group
         (-> (s/path p)
             (apply-styles default style2)
