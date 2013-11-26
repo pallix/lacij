@@ -23,11 +23,13 @@
 
 (defn- greedy-break-cycles
   [context]
-  (let [dummy-graph (:dummy-graph context)
-        [dummy-graph flipped-edges] (break-cycles dummy-graph (:flow context))]
-    (assoc context
-      :dummy-graph dummy-graph
-      :flipped-edges flipped-edges)))
+  (if (has-cycle? (:graph context))
+    (assoc context :has-cycle true)
+    (let [dummy-graph (:dummy-graph context)
+          [dummy-graph flipped-edges] (break-cycles dummy-graph (:flow context))]
+      (assoc context
+        :dummy-graph dummy-graph
+        :flipped-edges flipped-edges))))
 
 (defn- to-flip
   [context]
@@ -36,10 +38,12 @@
 
 (defn- restore-cycles
   [context]
-  (let [{:keys [dummy-graph]} context
-        dummy-graph (flip-edges dummy-graph (to-flip context))]
-    ;; (prn "restore-cycles, nodes =" (vals (:nodes dummy-graph)))
-    (assoc context :dummy-graph dummy-graph)))
+  (if (:has-cycle context)
+    (let [{:keys [dummy-graph]} context
+         dummy-graph (flip-edges dummy-graph (to-flip context))]
+     ;; (prn "restore-cycles, nodes =" (vals (:nodes dummy-graph)))
+      (assoc context :dummy-graph dummy-graph))
+    context))
 
 (defn- get-layer
   [n layers]

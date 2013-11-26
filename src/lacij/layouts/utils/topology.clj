@@ -33,3 +33,9 @@
                               state
                               outedges)]
             (recur state)))))))
+
+(defn has-cycle?
+  [graph]
+  (try (topological-seq graph)
+       true
+       (catch Exception _ false)))

@@ -18,9 +18,9 @@ Publisher: IEEE, Pages: 13-17"}
         src (:src edge)
         dst (:dst edge)]
     (or (and (= flow :in)
-             (< (labeling src) (labeling dst)))
+             (> (labeling src) (labeling dst)))
         (and (= flow :out)
-             (> (labeling src) (labeling dst))))))
+             (< (labeling src) (labeling dst))))))
 
 (defn flip-edge
   [graph edge-id]
