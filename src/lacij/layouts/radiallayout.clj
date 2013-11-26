@@ -2,9 +2,9 @@
 ;;; Licensed under the EPL V.1.0
 
 (ns ^{:doc "Implementation of the radial layout described in
- 
-            ﻿Wills, Graham J. 1999. 
-           'NicheWorks: Interactive Visualization of Very Large Graphs.' 
+
+            ﻿Wills, Graham J. 1999.
+           'NicheWorks: Interactive Visualization of Very Large Graphs.'
             Journal of Computational and Graphical Statistics 8(2): 190.
 
             This layout looks well on graphs that are closed
@@ -17,10 +17,12 @@
         lacij.layouts.core
         lacij.opt.annealing
         lacij.layouts.utils.position)
-  (:require [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [lacij.layouts.utils.topology :refer :all]
+            [lacij.layouts.utils.cycle :refer [break-cycles flip-edges]]))
 
 (defn assoc-node-to-layer
-  "Updates the layer-data structures and set the layer of a 
+  "Updates the layer-data structures and set the layer of a
    given node."
   [layers-data layer node]
   (let [nodes (get (:layers layers-data) layer)
@@ -169,7 +171,7 @@
 (defn place-nodes-helper
   "Helper for the place nodes function."
   [graph tree layers-data radius nextchildren sort-children]
-  (if (seq nextchildren) 
+  (if (seq nextchildren)
     (let [[child & res] nextchildren]
       (let [{:keys [child absolute-angle offset layer center-x center-y]} child
             ang (angle layers-data child)
@@ -196,7 +198,7 @@
 (defn place-nodes
   "Given layers-data and a tree, assign x-y coordinates to the nodes
    of the graph to build a hierarchical layout. "
-  [graph tree layers-data options] 
+  [graph tree layers-data options]
   (let [{:keys [width height radius sort-children]} options
         rootnode (ffirst (:layers layers-data))
         center-x (double (/ width 2))
@@ -220,11 +222,11 @@
   (map vector (iterate inc 0) coll))
 
 (defn proximity
-  "Returns the proximity value between one child and one sibling, or the 
+  "Returns the proximity value between one child and one sibling, or the
    sum of proximity values of one child and its other siblings.
 
-   The proximity value of one child and one sibling is 0 if they have 
-   no in-children in common, otherwise it is the value of the distance 
+   The proximity value of one child and one sibling is 0 if they have
+   no in-children in common, otherwise it is the value of the distance
    between the indexes of the two siblings. "
   ([graph idxchild1 child1 idxchild2 child2]
      (let [children1 (in-children graph child1)
@@ -289,6 +291,21 @@
               :temp 20 :iterations 50 :calibration false)
     children))
 
+(defn- greedy-break-cycles
+  "Breaks the cycle in the graph, if any."
+  [graph flow]
+  (if (has-cycle? graph)
+    (let [[graph flipped-edges] (break-cycles graph flow)]
+      {:graph graph
+       :flipped-edges flipped-edges
+       :has-cycle true})
+    {:graph graph :has-cycle false}))
+
+(defn- restore-cycles
+  "Restores the cycle in the graph"
+  [graph flipped]
+  (flip-edges graph flipped))
+
 (defrecord RadialLayout
     []
   Layout
@@ -304,14 +321,20 @@
                          :height (or (:height graph) 1200)
                          :radius 180
                          :sort-children default-sort-children
-                         :root nil}
+                         :root nil
+                         :flow :in}
                         options)
+         context (greedy-break-cycles graph (:flow options))
+         graph (:graph context)
          [tree layers-data] (if (nil? (:root options))
                               (build-tree graph)
                               (build-tree graph (:root options)))
          layers-data (label-sizes tree layers-data)
          layers-data (label-angles tree layers-data)
          graph (place-nodes graph tree layers-data options)
+         graph (if (:has-cycle context)
+                 (restore-cycles graph (:flipped-edges context))
+                 graph)
          graph (make-graph-visible graph)
          graph (adjust-size graph)]
      graph)))
