@@ -37,5 +37,5 @@
 (defn has-cycle?
   [graph]
   (try (topological-seq graph)
-       true
-       (catch Exception _ false)))
+       false
+       (catch Exception _ true)))

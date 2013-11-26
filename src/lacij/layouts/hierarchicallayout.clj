@@ -24,12 +24,12 @@
 (defn- greedy-break-cycles
   [context]
   (if (has-cycle? (:graph context))
-    (assoc context :has-cycle true)
     (let [dummy-graph (:dummy-graph context)
           [dummy-graph flipped-edges] (break-cycles dummy-graph (:flow context))]
       (assoc context
         :dummy-graph dummy-graph
-        :flipped-edges flipped-edges))))
+        :flipped-edges flipped-edges))
+    (assoc context :has-cycle true)))
 
 (defn- to-flip
   [context]
