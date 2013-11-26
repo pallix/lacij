@@ -17,7 +17,29 @@
         lacij.view.core
         lacij.utils.core
         lacij.layouts.utils.position)
-  (:require [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [lacij.layouts.utils.topology :refer :all]
+            [lacij.layouts.utils.cycle :refer [break-cycles flip-edges]]))
+
+(defn- greedy-break-cycles
+  [context]
+  (let [dummy-graph (:dummy-graph context)
+        [dummy-graph flipped-edges] (break-cycles dummy-graph (:flow context))]
+    (assoc context
+      :dummy-graph dummy-graph
+      :flipped-edges flipped-edges)))
+
+(defn- to-flip
+  [context]
+  (let [{:keys [flipped-edges segmented-edges]} context]
+    (mapcat (fn [eid] (or (segmented-edges eid) [eid])) flipped-edges)))
+
+(defn- restore-cycles
+  [context]
+  (let [{:keys [dummy-graph]} context
+        dummy-graph (flip-edges dummy-graph (to-flip context))]
+    ;; (prn "restore-cycles, nodes =" (vals (:nodes dummy-graph)))
+    (assoc context :dummy-graph dummy-graph)))
 
 (defn- get-layer
   [n layers]
@@ -44,42 +66,13 @@
           layers
           (in-children graph n)))
 
-(defn topological-seq
-  "Returns a topological sort of the nodes in the graph"
-  [graph]
-  ;; see https://en.wikipedia.org/wiki/Topological_sorting
-  (let [s (filter (fn [n] (empty? (in-children graph n))) (keys (:nodes graph)))]
-    (loop [state {:s s
-                  :l []
-                  :removed #{}}]
-      (if (empty? (:s state))
-        (if-not (= (:removed state) (set (keys (:edges graph))))
-          (throw (ex-info "Acyclic graph are not allowed" {}))
-          (reverse (:l state)))
-        (let [[node & remaining] (:s state)]
-          (let [state (assoc state :s remaining)
-                state (assoc state :l (cons node (:l state)))
-                outedges (set/difference (set (:outedges ((:nodes graph) node)))
-                                         (:removed state))
-                state (reduce (fn [state edge]
-                                (let [state (update-in state [:removed] conj edge)
-                                      dst (:dst ((:edges graph) edge))
-                                      incoming (:inedges ((:nodes graph) dst))
-                                      incoming (set/difference (set incoming) (:removed state))]
-                                  (if (empty? incoming)
-                                    (update-in state [:s] conj dst)
-                                    state)))
-                              state
-                              outedges)]
-            (recur state)))))))
-
 (defn- longest-path-layering
   [context]
-  (let [graph (:graph context)
-        sorted (sort (keys (:nodes graph)))
-        topology (topological-seq graph)
+  (let [dummy-graph (:dummy-graph context)
+        sorted (sort (keys (:nodes dummy-graph)))
+        topology (topological-seq dummy-graph)
         layers (reduce (fn [layers n]
-                         (update-layers graph n layers))
+                         (update-layers dummy-graph n layers))
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
                         :layer-to-node (sorted-map)}
                        (reverse topology))]
@@ -89,49 +82,65 @@
   [n1 n2 layers]
   (let [l1 (get-layer n1 layers)
         l2 (get-layer n2 layers)]
-    (- l2 l1)))
+    (Math/abs (- l2 l1))))
 
-(defn- add-dummy-node
-  [context nextnodes n1 n2]
-  (let [{:keys [layers dummy-graph dummy-nodes segmented-edges]} context
-        l1 (get-layer n1 layers)
-        id (genid)
-        dummygraph (add-node dummy-graph id (str id))
-        dummygraph (remove-edge dummygraph n1 n2)
+(defn add-subsegment
+  [eid context subsegment]
+  (let [{:keys [graph dummy-graph dummy-nodes layers segmented-edges]} context
+        src (first subsegment)
+        dst (second subsegment)
+        segment-current-layer (:segment-current-layer context)
+        dummy-graph (add-node dummy-graph dst (str dst))
+        layers (assoc-in layers [:node-to-layer dst] segment-current-layer)
         e1 (geneid)
-        dummygraph (add-edge dummygraph e1 n1 id)
-        e2 (geneid)
-        dummygraph (add-edge dummygraph e2 id n2)
-        layers (assoc-in layers [:node-to-layer id] (dec l1))
-        dummy-nodes (conj dummy-nodes id)]
-    [(assoc context
-       :dummy-graph dummygraph :layers layers :prev-node id
-       :dummy-nodes dummy-nodes)
-     (conj nextnodes id)]))
+        dummy-graph (add-edge dummy-graph e1 src dst)
+        context (update-in context [:segmented-edges eid] concat [e1])
+        ;; TODO: this needs to be adapted when implementing the :flow option
+        segment-current-layer (dec segment-current-layer)
+        dummy-nodes (conj dummy-nodes dst)]
+    (assoc context
+      :layers layers
+      :dummy-graph dummy-graph
+      :dummy-nodes dummy-nodes
+      :segment-current-layer segment-current-layer)))
 
-(defn- add-dummy-nodes-helper
-  [context tovisit]
-  (let [dummy-graph (:dummy-graph context)
-        [n & nextnodes] tovisit]
-    (if (nil? n)
-      context
-      (let [[context nextnodes]
-            (reduce (fn [[context nextnodes] u]
-                      (let [{:keys [layers]} context
-                            sp (span u n layers)]
-                        ;; (printf "%s -> %s = %s\n" n u sp)
-                        (if (> sp 1)
-                          (add-dummy-node context nextnodes n u)
-                          [context nextnodes])))
-                    [context nextnodes]
-                    (out-children dummy-graph n))]
-        (recur context nextnodes)))))
+(defn segment-long-edge
+  [context edge sp]
+  (let [{:keys [dummy-graph]} context
+        flat-segment (concat (cons (:src edge) (repeatedly (dec sp) genid)) [(:dst edge)])
+        segment (partition 2 1 flat-segment)
+        layers (:layers context)
+        context (assoc context :segment-current-layer (dec (max (get-layer (:src edge) layers)
+                                                                (get-layer (:dst edge) layers))))
+        context (assoc context :dummy-graph dummy-graph)
+        context (reduce (partial add-subsegment (:id edge)) context (butlast segment))
+        last-subsegment (last segment)
+        eid (geneid)
+        dummy-graph (add-edge (:dummy-graph context)
+                              eid (first last-subsegment) (second last-subsegment))
+        context (update-in context [:segmented-edges (:id edge)] concat [eid])
+        dummy-graph (remove-edge-by-id dummy-graph (:id edge))
+        context (assoc context :dummy-graph dummy-graph)
+        context (update-in context [:segments] assoc (:id edge) flat-segment)]
+    context))
+
+(defn segment-long-edges-helper
+  [context eid]
+
+  (let [e ((-> context :dummy-graph :edges) eid)
+        sp (span (:dst e) (:src e) (:layers context))]
+    (if (> sp 1)
+      (segment-long-edge context e sp)
+      context)))
+
+(defn segment-long-edges
+  [context]
+  (reduce segment-long-edges-helper context (keys (-> context :dummy-graph :edges))))
 
 (defn- add-dummy-nodes
   [context]
   (let [{:keys [graph layers]} context
-        context (add-dummy-nodes-helper (assoc context :dummy-nodes #{})
-                                        (keys (:nodes graph)))]
+        context (segment-long-edges context)]
     (update-in context [:layers] build-layer-to-node)))
 
 (defn- bary
@@ -139,11 +148,14 @@
   (let [{:keys [layers dummy-graph]} context
         {:keys [layer-to-node]} layers
         nodes (get layer-to-node (dec layeru))
+        ;; _ (prn "nodes=" nodes)
+        ;; _ (prn "layers =" layers)
+        ;; _ (prn "u = " u)
         vs (out-children dummy-graph u)
+        ;; _ (prn "vs=" vs)
+        ;; _ (prn "map=" (map #(index-of nodes %) vs))
         val (/ (apply + (map #(index-of nodes %) vs)) (count vs))]
-    ;; (printf "u = %s (%s) nodes = %s vs = %s => %s\n" u layeru nodes vs val)
-    val
-    ))
+    val))
 
 (defn- bary-sort
   [context layer]
@@ -485,31 +497,16 @@
                 (keys (:nodes dummy-graph)))]
     (assoc context :graph graph)))
 
-(defn- get-segmented-path
-  [dummy-graph dummy-nodes nid nid2]
-  (loop [current nid2
-         path [nid nid2]]
-    (let [nextid (first (out-children dummy-graph current))]
-      (cond (nil? nextid)
-            path
-
-            (get dummy-nodes nextid)
-            (recur nextid (conj path nextid))
-
-            :else
-            (conj path nextid)))))
-
-(defn- find-segmented-paths
-  [graph nid dummy-graph dummy-nodes]
-  (let [dummychildren (filter #(not (nil? (get dummy-nodes %))) (out-children dummy-graph nid))]
-    (map #(get-segmented-path dummy-graph dummy-nodes nid %) dummychildren)))
-
 (defn- create-segment
-  [graph dummy-graph segment]
-  (let [begin (first segment)
+  [context segment]
+  (let [{:keys [graph dummy-graph]} context
+        begin (first segment)
         end (last segment)
-        points (map #(center (:view ((:nodes dummy-graph) %))) (butlast (rest segment)))
-        edgeid (first (filter #(= end (:dst ((:edges graph) %))) (:outedges ((:nodes graph) begin))))
+        points (map (fn [id]
+                      (center (:view ((:nodes dummy-graph) id))))
+                    (butlast (rest segment)))
+        edgeid (first (filter #(= end (:dst ((:edges graph) %)))
+                              (:outedges ((:nodes graph) begin))))
         eview (:view ((:edges graph) edgeid))
         {:keys [labels style attrs]} eview
         graph (remove-edge graph begin end)
@@ -521,28 +518,20 @@
                           (add-label-kv graph edgeid txt params)))
                       graph
                       labels)]
-    ;; (p (edge graph edgeid))
-    ;; (p (edge-labels eview))
-    graph))
-
-(defn- segment-outgoing-edges
-  [graph nid dummy-graph dummy-nodes]
-  ;; segment outgoing edges if necessary
-  (let [segments (find-segmented-paths graph nid dummy-graph dummy-nodes)
-        graph (reduce (fn [graph segment]
-                        (create-segment graph dummy-graph segment))
-                      graph
-                      segments)]
-    graph))
-
-(defn- add-segments
-  [context]
-  (let [{:keys [graph dummy-graph dummy-nodes]} context
-        graph (reduce (fn [graph nid]
-                        (segment-outgoing-edges graph nid dummy-graph dummy-nodes))
-                      graph
-                      (keys (:nodes graph)))]
     (assoc context :graph graph)))
+
+(defn get-segments
+  [context]
+  (let [flipped (:flipped-edges context)]
+    (map (fn [[eid segment]]
+           (if (flipped eid)
+             (reverse segment)
+             segment))
+         (:segments context))))
+
+(defn add-segments
+  [context]
+  (reduce create-segment context (get-segments context)))
 
 (defn- cleanup
   [context]
@@ -555,27 +544,36 @@
   Layout
 
   (layout-graph
-    ;; Available options are :layer-space and :inlayer-space
+    ;; Available options are :layer-space, :inlayer-space and :flow
    [this graph options]
-    (let [steps {:layering longest-path-layering
+    (let [steps {:break-cycles greedy-break-cycles
+                 :layering longest-path-layering
                  :dummy-nodes add-dummy-nodes
                  :crossing-minimization bary-layer-by-layer
                  :bendsangles-reduction identity
                  :coordinates-assignment assign-coordinates
+                 :restore-cycles restore-cycles
                  :cleanup cleanup}
-          context (merge {:graph graph :dummy-graph graph :inlayer-space 20 :layer-space 150}
+          context (merge {:graph graph
+                          :dummy-graph graph
+                          :dummy-nodes #{}
+                          :inlayer-space 20
+                          :layer-space 150
+                          :flipped-edges #{}
+                          :flow (or (:flow options) :in)
+                          }
                          options)
           ;; calls each step of the layout:
           context (->> context
+                       ((:break-cycles steps))
                        ((:layering steps))
                        ((:dummy-nodes steps))
                        ((:crossing-minimization steps))
                        ((:bendsangles-reduction steps))
                        ((:coordinates-assignment steps))
+                       ((:restore-cycles steps))
                        ((:cleanup steps)))]
-      (-> (:graph context)
-          (make-graph-visible)
-          (adjust-size)))))
+      (:graph context))))
 
 (defn hierarchicallayout []
   (HierarchicalLayout.))

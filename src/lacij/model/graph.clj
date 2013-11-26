@@ -89,23 +89,37 @@
   (concat (in-children graph nid)
           (out-children graph nid)))
 
+(defn count-out-edges
+  [graph nid]
+  (count (:outedges ((:nodes graph) nid))))
+
+(defn count-in-edges
+  [graph nid]
+  (count (:inedges ((:nodes graph) nid))))
+
+(defn orphan?
+  "Returns true if the node is an orphan."
+  [graph nid]
+  (and (zero? (count-out-edges graph nid))
+       (zero? (count-in-edges graph nid))))
+
 (defn find-roots
-  "Returns a seq of the roots of the graph. The roots are the node
-   with the minimum of out-edges"
+  "Returns a seq of the roots of the graph. The roots are the nodes with the
+   minimum number of out-edges. Orphan nodes are ignored."
   [graph]
-  (let [nout (fn [node] (count (:outedges ((:nodes graph) node))))
-        allnodes (keys (:nodes graph))
-        fnode (first (filter #(pos? (nout %)) allnodes))
-        min (nout fnode)]
+  (let [allnodes (keys (:nodes graph))
+        fnode (first (filter (complement (partial orphan? graph))
+                             allnodes))
+        min (count-out-edges graph fnode)]
     (if-not fnode
       ()
       (seq (:roots
             (reduce
              (fn [{:keys [roots min] :as m} nodeid]
-               (let [out (nout nodeid)]
+               (let [out (count-out-edges graph nodeid)]
                  (cond
                   ;; fewer out-edges than the current roots? discard them
-                  (and (< out min) (pos? out)) (assoc m :roots #{nodeid} :min out)
+                  (and (< out min) (not (orphan? graph nodeid))) (assoc m :roots #{nodeid} :min out)
                   ;; the same number, add it (we have multiple roots)
                   (= out min) (update-in m [:roots] conj nodeid)
                   :else
@@ -113,3 +127,29 @@
              {:roots #{fnode}
               :min min}
              allnodes))))))
+
+(defn depth-first-node
+  [graph node get-children {:keys [visited ordered-visited] :as context}]
+  (let [ordered-visited (conj ordered-visited node)
+        visited (conj visited node)
+        context (assoc context :visited visited :ordered-visited ordered-visited)
+        non-visited-children (filter (complement visited) (get-children node))]
+    (reduce (fn [context node]
+              (if ((:visited context) node)
+                context
+                (depth-first-node graph node get-children context)))
+            context
+            non-visited-children)))
+
+(defn depth-first
+  "Returns a depth-first sequence of the nodes in the graph.
+The roots used to begin the search are defined by the user. "
+  [graph get-children roots]
+  (:ordered-visited
+   (reduce (fn [context node]
+             (if ((:visited context) node)
+               context
+               (depth-first-node graph node get-children context)))
+           {:visited #{}
+            :ordered-visited []}
+           roots)))
