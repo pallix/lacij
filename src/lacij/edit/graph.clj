@@ -14,7 +14,8 @@
         [tikkba.swing :only [set-document]])
   (:require [lacij.model.graph :as g]
             [lacij.model.node :as n]
-            [lacij.model.edge :as e]))
+            [lacij.model.edge :as e]
+            [lacij.model.graph-history :refer [graphstate]]))
 
 (defn- create-node-view
   [id shape x y node-styles style node-attrs attrs node-view-factory]
@@ -99,7 +100,7 @@
    (empty? params)
    (f this id {})
 
-   (keyword? (first params)) 
+   (keyword? (first params))
    (f this id (merge {:label (name id) :x 0 :y 0}
                      (apply hash-map params)))
 
@@ -226,7 +227,7 @@
                                    :viewBox (:viewBox graph)})
    (set-document (:svgcanvas graph) (:xmldoc graph))
   ;; set initial state:
-   (swap! (:history graph) add-state (:graphstate graph))
+   (swap! (:history graph) add-state (graphstate graph))
   graph)
 
 (defn set-node-view-factory

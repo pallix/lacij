@@ -19,7 +19,8 @@
                                        post-edit]])
   (:require [lacij.model.node :as n]
             [lacij.model.edge :as e]
-            [tikkba.utils.dom :as dom]))
+            [tikkba.utils.dom :as dom]
+            [lacij.model.graph-history :refer [graphstate]]))
 
 (defn add-node-kv!
  [graph id params]
@@ -31,7 +32,7 @@
        docel (dom/document-element (:xmldoc graph))
        edit (node-inserted-edit docel nil node-element)
        graph (update-in graph [:nodes] assoc id node)
-       edit2 (add-state-edit (:history graph) (:graphstate graph))
+       edit2 (add-state-edit (:history graph) (graphstate graph))
        compedit (compound-edit edit edit2)]
    (post-edit (:undosupport graph) compedit)
    graph))
@@ -90,7 +91,7 @@
         graph (reduce (fn [graph [type f args]]
                         (update-listeners graph id type f args)) graph listeners)
         listenersedit (attach-listeners-edit xmldoc id listeners)
-        historyedit (add-state-edit history (:graphstate graph))
+        historyedit (add-state-edit history (graphstate graph))
         compedit (compound-edit removeedit insertedit listenersedit historyedit)]
     [graph compedit]))
 
@@ -140,7 +141,7 @@
        edit (node-inserted-edit docel nil edge-element)
        graph (update-in graph [:edges] assoc id edge)
        graph (update-node-edges graph id id-node-src id-node-dst)
-       edit2 (add-state-edit (:history graph) (:graphstate graph))
+       edit2 (add-state-edit (:history graph) (graphstate graph))
        compedit (compound-edit edit edit2)]
    (post-edit (:undosupport graph) compedit)
    graph))
@@ -162,9 +163,10 @@
  (if (can-undo? graph)
    (do
      (.undo (:undomanager graph))
-     (let [graph (restore-state graph (current-state (deref (:history graph))))
+     (let [previous (:nodes-selections graph)
+           graph (restore-state graph (current-state (deref (:history graph))))
            graph (refresh-nodes-selections graph
-                                           (:nodes-selections graph)
+                                           previous
                                            (:nodes-selections graph))]
        graph))
    graph))
@@ -178,19 +180,20 @@
  (if (can-redo? graph)
    (do
      (.redo (:undomanager graph))
-     (let [graph (restore-state graph (current-state (deref (:history graph))))
+     (let [previous (:nodes-selections graph)
+           graph (restore-state graph (current-state (deref (:history graph))))
            graph (refresh-nodes-selections graph
-                                           (get graph :nodes-selections)
+                                           previous
                                            (:nodes-selections graph))]
-       (swap! (:history graph) update-current-state (:graphstate graph))
+       (swap! (:history graph) update-current-state (graphstate graph))
        graph))
    graph))
 
 (defn set-node-selected!
  [graph id selected]
- (let [current-selected (conj (get graph :nodes-selections) id)
+ (let [current-selected (conj (:nodes-selections graph) id)
        graph (refresh-nodes-selections graph
-                                       (get graph :nodes-selections)
+                                       (:nodes-selections graph)
                                        current-selected)]
-   (swap! (:history graph) update-current-state (:graphstate graph))
+   (swap! (:history graph) update-current-state (graphstate graph))
    graph))
