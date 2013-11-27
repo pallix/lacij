@@ -504,9 +504,7 @@
                     (upward-iter2)
                     )
                     ]
-    (-> context
-        (update-in [:dummy-graph] make-graph-visible)
-        (update-in [:dummy-graph] adjust-size))))
+    context))
 
 (defn- place-nodes
   "Places nodes in the graph according to their positions in the dummy graph"
@@ -563,7 +561,9 @@
 (defn- cleanup
   [context]
   (let [context (place-nodes context)
-        context (add-segments context)]
+        context (add-segments context)
+        context (update-in context [:graph] make-graph-visible)
+        context (update-in context [:graph] adjust-size)]
     context))
 
 (defn set-inout-children-fns
