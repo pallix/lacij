@@ -31,7 +31,7 @@
                 [fnode yupper fnode xleft]
                 ids)
         xtrans (if (neg? xleft) (- xleft) 0)
-        ytrans (if (neg? yupper) (- yupper) 0)]
+        ytrans (if (neg? yupper) (- yupper) (+ (- yupper) 10))]
     ;; (printf "xtrans = %s ytrans = %s\n" xtrans ytrans)
     (if (and (zero? xtrans) (zero? ytrans))
       graph
