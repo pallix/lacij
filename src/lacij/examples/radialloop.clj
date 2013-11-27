@@ -1,8 +1,9 @@
 (ns lacij.examples.radialloop
   (:use clojure.pprint
         lacij.layouts.layout
-        lacij.graph.core
-        lacij.graph.svg.graph))
+        lacij.model.graph
+        lacij.edit.graph
+        lacij.view.graphview))
 
 (defn add-nodes [g & nodes]
   (reduce (fn [g node]
@@ -30,7 +31,7 @@
       (add-edges [:a :b] [:b :c] [:c :a])))
 
 (defn -main []
-  (let [g (-> (tight-loop)
+  (let [g (-> (loose-loop)
               (layout :radial :radius 90)
               (build))]
       (export g "/tmp/radial.svg" :indent "yes")))
