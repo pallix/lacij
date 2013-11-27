@@ -23,7 +23,7 @@
 
 (defn- greedy-break-cycles
   [context]
-  (if (has-cycle? (:graph context))
+  (if (has-cycle? (:graph context) (:flow context))
     (let [dummy-graph (:dummy-graph context)
           [dummy-graph flipped-edges] (break-cycles dummy-graph (:flow context))]
       (assoc context
@@ -60,7 +60,7 @@
           (keys (:node-to-layer layers))))
 
 (defn- update-layers
-  [graph n layers]
+  [context graph n layers]
   (reduce (fn [{:keys [node-to-layer] :as layers} u]
             (let [layern (get node-to-layer n)
                   layeru (get node-to-layer u)
@@ -68,15 +68,15 @@
               (-> layers
                   (assoc-in [:node-to-layer u] layer))))
           layers
-          (in-children graph n)))
+          ((:in-children context) graph n)))
 
 (defn- longest-path-layering
   [context]
   (let [dummy-graph (:dummy-graph context)
         sorted (sort (keys (:nodes dummy-graph)))
-        topology (topological-seq dummy-graph)
+        topology (topological-seq dummy-graph (:flow context))
         layers (reduce (fn [layers n]
-                         (update-layers dummy-graph n layers))
+                         (update-layers context dummy-graph n layers))
                        {:node-to-layer (apply hash-map (interleave topology (repeat 0)))
                         :layer-to-node (sorted-map)}
                        (reverse topology))]
@@ -99,8 +99,9 @@
         e1 (geneid)
         dummy-graph (add-edge dummy-graph e1 src dst)
         context (update-in context [:segmented-edges eid] concat [e1])
-        ;; TODO: this needs to be adapted when implementing the :flow option
-        segment-current-layer (dec segment-current-layer)
+        segment-current-layer (if (= (:flow context) :in)
+                                (dec segment-current-layer)
+                                (inc segment-current-layer))
         dummy-nodes (conj dummy-nodes dst)]
     (assoc context
       :layers layers
@@ -114,8 +115,11 @@
         flat-segment (concat (cons (:src edge) (repeatedly (dec sp) genid)) [(:dst edge)])
         segment (partition 2 1 flat-segment)
         layers (:layers context)
-        context (assoc context :segment-current-layer (dec (max (get-layer (:src edge) layers)
-                                                                (get-layer (:dst edge) layers))))
+        context (assoc context :segment-current-layer (if (= (:flow context) :in)
+                                                        (dec (max (get-layer (:src edge) layers)
+                                                                  (get-layer (:dst edge) layers)))
+                                                        (inc (min (get-layer (:src edge) layers)
+                                                                  (get-layer (:dst edge) layers)))))
         context (assoc context :dummy-graph dummy-graph)
         context (reduce (partial add-subsegment (:id edge)) context (butlast segment))
         last-subsegment (last segment)
@@ -143,8 +147,7 @@
 
 (defn- add-dummy-nodes
   [context]
-  (let [{:keys [graph layers]} context
-        context (segment-long-edges context)]
+  (let [context (segment-long-edges context)]
     (update-in context [:layers] build-layer-to-node)))
 
 (defn- bary
@@ -155,10 +158,11 @@
         ;; _ (prn "nodes=" nodes)
         ;; _ (prn "layers =" layers)
         ;; _ (prn "u = " u)
-        vs (out-children dummy-graph u)
-        ;; _ (prn "vs=" vs)
-        ;; _ (prn "map=" (map #(index-of nodes %) vs))
-        val (/ (apply + (map #(index-of nodes %) vs)) (count vs))]
+        out ((:out-children context) dummy-graph u)
+        in ((:in-children context) dummy-graph u)
+        ;; _ (prn "out=" out)
+        ;; _ (prn "map=" (map #(index-of nodes %) out))
+        val (/ (apply + (map #(index-of nodes %) out)) (count out))]
     val))
 
 (defn- bary-sort
@@ -235,12 +239,12 @@
           (last up))))
 
 (defn- down-median
-  [dummy-graph n]
-  (x-median dummy-graph n in-children))
+  [context dummy-graph n]
+  (x-median dummy-graph n (:in-children context)))
 
 (defn- up-median
-  [dummy-graph n]
-  (x-median dummy-graph n out-children))
+  [context dummy-graph n]
+  (x-median dummy-graph n (:out-children context)))
 
 (defn- upperdowner-nodes
   [dummy-graph n nodes placed]
@@ -376,7 +380,7 @@
                                         (layer-to-node layer)
                                         placed
                                         (:inlayer-space context)
-                                        up-median)))
+                                        (partial up-median context))))
                                    [dummy-graph #{}]
                                    upprioritized-nodes))]
     (assoc context :dummy-graph dummy-graph)))
@@ -394,7 +398,7 @@
                                         (layer-to-node layer)
                                         placed
                                         (:inlayer-space context)
-                                        down-median)))
+                                        (partial down-median context))))
                                    [dummy-graph #{}]
                                    downprioritized-nodes))]
     (assoc context :dummy-graph dummy-graph)))
@@ -425,21 +429,32 @@
     (assoc context :dummy-graph dummy-graph)))
 
 (defn- minnode-helper
-  [dummy-graph placed queue inqueue node-to-layer layer-to-node inlayer-space step]
+  ;; TODO: refactor
+  [context
+   dummy-graph
+   placed
+   queue
+   inqueue
+   node-to-layer
+   layer-to-node
+   inlayer-space
+   step]
   (let [[x & xs] queue]
     (if (or (nil? x) (neg? step))
       dummy-graph
       (let [[_ current] (:center (:view ((:nodes dummy-graph) x)))
-            down (down-median dummy-graph x)
+            down (down-median context dummy-graph x)
             up (up-median dummy-graph x)
             med (int (/ (+ down up) 2))]
         (if (not= (int current) med)
           (let [layer (node-to-layer x)
                 nodesinlayer (layer-to-node layer)
                 dummy-graph (move-node-inlayer dummy-graph x nodesinlayer med placed inlayer-space)
-                children (concat (in-children dummy-graph x) (out-children dummy-graph x) )
+                children (concat ((:in-children context) dummy-graph x)
+                                 ((:out-children context) dummy-graph x) )
                 childrennotinqueue (clojure.set/difference (set children) inqueue)]
-            (recur dummy-graph
+            (recur context
+                   dummy-graph
                    (apply disj (conj placed x) children)
                    (concat xs childrennotinqueue)
                    (into (disj inqueue x) childrennotinqueue)
@@ -447,7 +462,14 @@
                    layer-to-node
                    inlayer-space
                    (dec step)))
-          (recur dummy-graph (conj placed x) xs (disj inqueue x) node-to-layer layer-to-node inlayer-space
+          (recur context
+                 dummy-graph
+                 (conj placed x)
+                 xs
+                 (disj inqueue x)
+                 node-to-layer
+                 layer-to-node
+                 inlayer-space
                  (dec step)))))))
 
 (defn- minnode
@@ -458,7 +480,8 @@
         dummy-graph (:dummy-graph context)
         inlayer-space (:inlayer-space context)]
     (assoc context :dummy-graph
-           (minnode-helper dummy-graph #{}
+           (minnode-helper context
+                           dummy-graph #{}
                            (vec (keys (:nodes dummy-graph)))
                            (set (keys (:nodes dummy-graph)))
                            node-to-layer layer-to-node inlayer-space 3000))))
@@ -543,12 +566,22 @@
         context (add-segments context)]
     context))
 
+(defn set-inout-children-fns
+  [context]
+  (if (= (:flow context) :in)
+    (assoc context
+      :in-children in-children
+      :out-children out-children)
+    (assoc context
+      :in-children out-children
+      :out-children in-children)))
+
 (defrecord HierarchicalLayout
     []
   Layout
 
   (layout-graph
-    ;; Available options are :layer-space, :inlayer-space and :flow
+    ;; Available options are :layer-space, :inlayer-space and :flow (:in or :out)
    [this graph options]
     (let [steps {:break-cycles greedy-break-cycles
                  :layering longest-path-layering
@@ -567,6 +600,7 @@
                           :flow (or (:flow options) :in)
                           }
                          options)
+          context (set-inout-children-fns context)
           ;; calls each step of the layout:
           context (->> context
                        ((:break-cycles steps))

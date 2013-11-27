@@ -106,17 +106,20 @@
 (defn find-roots
   "Returns a seq of the roots of the graph. The roots are the nodes with the
    minimum number of out-edges. Orphan nodes are ignored."
-  [graph]
+  [graph flow]
   (let [allnodes (keys (:nodes graph))
         fnode (first (filter (complement (partial orphan? graph))
                              allnodes))
-        min (count-out-edges graph fnode)]
+        count-fn (if (= flow :in)
+                   count-out-edges
+                   count-in-edges)
+        min (count-fn graph fnode)]
     (if-not fnode
       ()
       (seq (:roots
             (reduce
              (fn [{:keys [roots min] :as m} nodeid]
-               (let [out (count-out-edges graph nodeid)]
+               (let [out (count-fn graph nodeid)]
                  (cond
                   ;; fewer out-edges than the current roots? discard them
                   (and (< out min) (not (orphan? graph nodeid))) (assoc m :roots #{nodeid} :min out)

@@ -41,7 +41,9 @@ Returns [graph flipped-edges]. "
   (let [get-children (if (= flow :in)
                        (partial g/in-children graph)
                        (partial g/out-children graph))
-        nodes (g/depth-first graph get-children (concat (g/find-roots graph) (keys (:nodes graph))))
+        nodes (g/depth-first graph
+                             get-children
+                             (concat (g/find-roots graph flow) (keys (:nodes graph))))
         labeling (zipmap nodes (iterate inc 0))
         up-edges (filter (partial up-edge? graph labeling flow) (keys (:edges graph)))
         graph (flip-edges graph up-edges)]
