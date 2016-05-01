@@ -21,7 +21,7 @@
   [id shape x y node-styles style node-attrs attrs node-view-factory]
   (if (nil? node-view-factory)
     (create-nodeview id shape x y (merge node-styles style) (merge node-attrs attrs))
-    (if-let [node-view (node-view-factory shape x y style attrs)]
+    (if-let [node-view (node-view-factory id shape x y (merge node-styles style) (merge node-attrs attrs))]
       node-view
       (create-nodeview id shape x y
                        (merge node-styles style)
