@@ -88,7 +88,7 @@ See [http://www.graphviz.org/Theory.php](http://www.graphviz.org/Theory.php) for
 
 ## Work in progress
 
-Bug fixes and API improvements.
+Maintenance.
 
 
 ## License
