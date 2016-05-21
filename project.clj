@@ -1,4 +1,4 @@
-(defproject lacij/lacij "0.9.1"
+(defproject lacij/lacij "0.10.0"
   :min-lein-version "2.0.0"
   :url "https://github.com/pallix/lacij"
   :license {:name "Eclipse Public License"
